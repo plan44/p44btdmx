@@ -1,0 +1,4 @@
+[submodule "components/p44utils"]
+	path = components/p44utils
+	url = ssh://plan44@plan44.ch/home/plan44/sharedgit/p44utils.git
+	branch = luz
