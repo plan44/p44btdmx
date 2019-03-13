@@ -4,8 +4,11 @@
 //  Author: Lukas Zeller <luz@plan44.ch>
 //
 
-#include "application.hpp"
 #include <stdio.h>
+
+#include "application.hpp"
+
+#include "ledchaincomm.hpp"
 
 
 using namespace p44;
@@ -16,6 +19,7 @@ class P44HelloWorld : public Application
 
   MLTicket counterTicket;
   int counter;
+  LEDChainCommPtr ledChain;
 
 public:
 
@@ -38,14 +42,19 @@ public:
   virtual void initialize()
   {
     LOG(LOG_NOTICE,"initialize");
+    ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio19", 10));
+    ledChain->begin();
     counterTicket.executeOnce(boost::bind(&P44HelloWorld::count, this, _1));
   }
 
   void count(MLTimer &aTimer)
   {
-    LOG(LOG_NOTICE, "Hello World #%d", counter++);
+    ledChain->clear();
+    ledChain->setColor(counter, 255-counter*10, counter*10, 0);
+    ledChain->show();
     MainLoop::currentMainLoop().retriggerTimer(aTimer, 1*Second);
-    if (counter>20) {
+    LOG(LOG_NOTICE, "Hello World #%d", counter++);
+    if (counter>10) {
       terminateApp(EXIT_SUCCESS);
     }
   }
