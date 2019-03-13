@@ -5,6 +5,8 @@
 //
 
 #include "application.hpp"
+#include <stdio.h>
+
 
 using namespace p44;
 
@@ -51,7 +53,7 @@ public:
 };
 
 
-extern "C" int main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   // prevent debug output before application.main scans command line
   SETLOGLEVEL(LOG_EMERG);
@@ -59,13 +61,5 @@ extern "C" int main(int argc, char **argv)
   // create app with current mainloop
   static P44HelloWorld application;
   // pass control to app object
-  int ret = application.main(0, NULL);
-  #if defined(__APPLE__)
-  return ret;
-  #else
-  // restart ESP when app terminates
-  printf("Application terminates with exit code = %d, Restarting now.\n", ret);
-  fflush(stdout);
-  esp_restart();
-  #endif
+  return application.main(0, NULL);
 }

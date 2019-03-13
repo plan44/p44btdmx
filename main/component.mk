@@ -9,4 +9,4 @@
 
 #include $(IDF_PATH)/make/component_common.mk
 
-CPPFLAGS += -D ESP32 -isystem /Volumes/CaseSens/openwrt/build_dir/target-mipsel_24kc_musl/boost_1_67_0
+CPPFLAGS += -isystem /Volumes/CaseSens/openwrt/build_dir/target-mipsel_24kc_musl/boost_1_67_0

@@ -15,6 +15,7 @@
 		ED0AF14F223814A100E3E7FC /* fdcomm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF097223807FE00E3E7FC /* fdcomm.cpp */; };
 		ED0AF1512238157C00E3E7FC /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0CA223807FE00E3E7FC /* application.cpp */; };
 		ED0AF1532238199B00E3E7FC /* p44utils_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */; };
+		ED0AF1552239592000E3E7FC /* esp_main.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1542239592000E3E7FC /* esp_main.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -116,6 +117,7 @@
 		ED0AF106223807FF00E3E7FC /* igmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = igmp.cpp; sourceTree = "<group>"; };
 		ED0AF1482238092800E3E7FC /* component.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = component.mk; sourceTree = "<group>"; };
 		ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44utils_main.cpp; sourceTree = "<group>"; };
+		ED0AF1542239592000E3E7FC /* esp_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = esp_main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -272,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				ED0AF1482238092800E3E7FC /* component.mk */,
+				ED0AF1542239592000E3E7FC /* esp_main.c */,
 				ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */,
 			);
 			path = main;
@@ -336,6 +339,7 @@
 				ED0AF107223807FF00E3E7FC /* utils.cpp in Sources */,
 				ED0AF1432238089700E3E7FC /* logger.cpp in Sources */,
 				ED0AF1442238089700E3E7FC /* error.cpp in Sources */,
+				ED0AF1552239592000E3E7FC /* esp_main.c in Sources */,
 				ED0AF1532238199B00E3E7FC /* p44utils_main.cpp in Sources */,
 				ED0AF14F223814A100E3E7FC /* fdcomm.cpp in Sources */,
 				ED0AF1512238157C00E3E7FC /* application.cpp in Sources */,
