@@ -2,10 +2,13 @@
 
 #include <stdlib.h>
 
+#include "wifi_init.h"
+
 extern int main(int argc, char **argv);
 
 int app_main()
 {
+  wifi_init();
   int ret = main(0, (void *)0);
   exit(ret);
 }

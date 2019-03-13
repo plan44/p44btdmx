@@ -9,6 +9,7 @@
 #include "application.hpp"
 
 #include "ledchaincomm.hpp"
+#include "socketcomm.hpp"
 
 
 using namespace p44;
@@ -20,6 +21,7 @@ class P44HelloWorld : public Application
   MLTicket counterTicket;
   int counter;
   LEDChainCommPtr ledChain;
+  SocketCommPtr apiServer;
 
 public:
 
@@ -39,22 +41,52 @@ public:
     return run();
   }
 
+  #define NUM_LEDS 10
+
   virtual void initialize()
   {
     LOG(LOG_NOTICE,"initialize");
-    ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio19", 10));
+    // socket
+    apiServer = SocketCommPtr(new SocketComm(MainLoop::currentMainLoop()));
+    apiServer->setConnectionParams(NULL, "8842", SOCK_STREAM, PF_UNSPEC);
+    apiServer->setAllowNonlocalConnections(true);
+    ErrorPtr err = apiServer->startServer(boost::bind(&P44HelloWorld::apiConnectionHandler, this, _1), 10);
+
+
+    // ledchain
+    ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio19", NUM_LEDS));
     ledChain->begin();
+    // second counter
     counterTicket.executeOnce(boost::bind(&P44HelloWorld::count, this, _1));
   }
 
+
+  SocketCommPtr apiConnectionHandler(SocketCommPtr aServerSocketCommP)
+  {
+    SocketCommPtr conn = SocketCommPtr(new SocketComm(MainLoop::currentMainLoop()));
+    conn->setReceiveHandler(boost::bind(&P44HelloWorld::gotData, this, conn, _1));
+    return conn;
+  }
+
+  void gotData(SocketCommPtr aConn, ErrorPtr aError)
+  {
+    if (Error::isOK(aError)) {
+      string s;
+      aConn->receiveIntoString(s);
+      LOG(LOG_NOTICE, "Got data: %s", s.c_str());
+    }
+  }
+
+
   void count(MLTimer &aTimer)
   {
+    int ledidx = counter % NUM_LEDS;
     ledChain->clear();
-    ledChain->setColor(counter, 255-counter*10, counter*10, 0);
+    ledChain->setColor(counter, 255-counter, counter, 0);
     ledChain->show();
     MainLoop::currentMainLoop().retriggerTimer(aTimer, 1*Second);
     LOG(LOG_NOTICE, "Hello World #%d", counter++);
-    if (counter>10) {
+    if (counter>100) {
       terminateApp(EXIT_SUCCESS);
     }
   }
