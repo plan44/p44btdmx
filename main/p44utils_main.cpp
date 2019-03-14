@@ -18,6 +18,8 @@
 
 using namespace p44;
 
+static size_t memAtStart = 0;
+
 class P44HelloWorld : public Application
 {
   typedef Application inherited;
@@ -93,8 +95,13 @@ public:
     else {
       LOG(LOG_NOTICE, "Got Json Object: %s", aJsonObject ? aJsonObject->c_strValue() : "<none>");
       #ifdef ESP_PLATFORM
-      LOG(LOG_INFO, "- Free heap = %zd", heap_caps_get_free_size(MALLOC_CAP_8BIT));
+      LOG(LOG_INFO, "- app mem usage = %zd", memAtStart-heap_caps_get_free_size(MALLOC_CAP_8BIT));
       #endif
+      if (aJsonObject) {
+        if (aJsonObject->stringValue()=="quit") {
+          terminateAppWith(TextError::err("received quit command via JSON"));
+        }
+      }
     }
   }
 
@@ -108,7 +115,7 @@ public:
     MainLoop::currentMainLoop().retriggerTimer(aTimer, 1*Second);
     LOG(LOG_NOTICE, "Hello World #%d", counter);
     #ifdef ESP_PLATFORM
-    LOG(LOG_INFO, "- Free heap = %zd", heap_caps_get_free_size(MALLOC_CAP_8BIT));
+    LOG(LOG_INFO, "- app mem usage = %zd", memAtStart-heap_caps_get_free_size(MALLOC_CAP_8BIT));
     #endif
     counter++;
   }
@@ -121,6 +128,10 @@ int main(int argc, char **argv)
   // prevent debug output before application.main scans command line
   SETLOGLEVEL(LOG_EMERG);
   SETERRLEVEL(LOG_EMERG, false); // messages, if any, go to stderr
+  #ifdef ESP_PLATFORM
+  memAtStart = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+  LOG(LOG_EMERG, "Start of app - Free heap = %zd", memAtStart);
+  #endif
   // create app with current mainloop
   static P44HelloWorld application;
   // pass control to app object
