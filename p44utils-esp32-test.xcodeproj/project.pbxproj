@@ -19,6 +19,18 @@
 		ED0AF15622395F2700E3E7FC /* ledchaincomm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF08D223807FE00E3E7FC /* ledchaincomm.cpp */; };
 		ED0AF15B223975CE00E3E7FC /* socketcomm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0C2223807FE00E3E7FC /* socketcomm.cpp */; };
 		ED0AF15E22397D0800E3E7FC /* wifi_init.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF15D22397D0800E3E7FC /* wifi_init.c */; };
+		ED0AF1CB223AB6CE00E3E7FC /* jsoncomm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0C0223807FE00E3E7FC /* jsoncomm.cpp */; };
+		ED0AF1CC223AB6CE00E3E7FC /* jsonobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0CD223807FE00E3E7FC /* jsonobject.cpp */; };
+		ED0AF1CD223ABAAC00E3E7FC /* arraylist.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF171223A97EB00E3E7FC /* arraylist.c */; };
+		ED0AF1CE223ABAAC00E3E7FC /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1AF223A97EB00E3E7FC /* debug.c */; };
+		ED0AF1CF223ABAAC00E3E7FC /* json_c_version.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF169223A97EB00E3E7FC /* json_c_version.c */; };
+		ED0AF1D0223ABAAC00E3E7FC /* json_object_iterator.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF16C223A97EB00E3E7FC /* json_object_iterator.c */; };
+		ED0AF1D1223ABAAC00E3E7FC /* json_tokener.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF16E223A97EB00E3E7FC /* json_tokener.c */; };
+		ED0AF1D2223ABAAC00E3E7FC /* json_util.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1C5223A97EB00E3E7FC /* json_util.c */; };
+		ED0AF1D3223ABAAC00E3E7FC /* linkhash.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF16D223A97EB00E3E7FC /* linkhash.c */; };
+		ED0AF1D4223ABAAC00E3E7FC /* printbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1B2223A97EB00E3E7FC /* printbuf.c */; };
+		ED0AF1D5223ABAAC00E3E7FC /* random_seed.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF160223A97EB00E3E7FC /* random_seed.c */; };
+		ED0AF1D6223ABB1900E3E7FC /* json_object.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1A3223A97EB00E3E7FC /* json_object.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -125,6 +137,41 @@
 		ED0AF159223969B700E3E7FC /* esp32_ws281x.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = esp32_ws281x.h; sourceTree = "<group>"; };
 		ED0AF15C22397D0800E3E7FC /* wifi_init.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wifi_init.h; sourceTree = "<group>"; };
 		ED0AF15D22397D0800E3E7FC /* wifi_init.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = wifi_init.c; sourceTree = "<group>"; };
+		ED0AF160223A97EB00E3E7FC /* random_seed.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = random_seed.c; sourceTree = "<group>"; };
+		ED0AF161223A97EB00E3E7FC /* printbuf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = printbuf.h; sourceTree = "<group>"; };
+		ED0AF162223A97EB00E3E7FC /* math_compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = math_compat.h; sourceTree = "<group>"; };
+		ED0AF164223A97EB00E3E7FC /* debug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug.h; sourceTree = "<group>"; };
+		ED0AF166223A97EB00E3E7FC /* INSTALL */ = {isa = PBXFileReference; lastKnownFileType = text; path = INSTALL; sourceTree = "<group>"; };
+		ED0AF169223A97EB00E3E7FC /* json_c_version.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = json_c_version.c; sourceTree = "<group>"; };
+		ED0AF16A223A97EB00E3E7FC /* ChangeLog */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
+		ED0AF16B223A97EB00E3E7FC /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		ED0AF16C223A97EB00E3E7FC /* json_object_iterator.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = json_object_iterator.c; sourceTree = "<group>"; };
+		ED0AF16D223A97EB00E3E7FC /* linkhash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = linkhash.c; sourceTree = "<group>"; };
+		ED0AF16E223A97EB00E3E7FC /* json_tokener.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = json_tokener.c; sourceTree = "<group>"; };
+		ED0AF171223A97EB00E3E7FC /* arraylist.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = arraylist.c; sourceTree = "<group>"; };
+		ED0AF1A3223A97EB00E3E7FC /* json_object.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = json_object.c; sourceTree = "<group>"; };
+		ED0AF1A7223A97EB00E3E7FC /* json_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_config.h; sourceTree = "<group>"; };
+		ED0AF1A8223A97EB00E3E7FC /* libjson.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = libjson.c; sourceTree = "<group>"; };
+		ED0AF1AA223A97EB00E3E7FC /* json_util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_util.h; sourceTree = "<group>"; };
+		ED0AF1AD223A97EB00E3E7FC /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		ED0AF1AF223A97EB00E3E7FC /* debug.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = debug.c; sourceTree = "<group>"; };
+		ED0AF1B1223A97EB00E3E7FC /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		ED0AF1B2223A97EB00E3E7FC /* printbuf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = printbuf.c; sourceTree = "<group>"; };
+		ED0AF1B3223A97EB00E3E7FC /* compile */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = compile; sourceTree = "<group>"; };
+		ED0AF1B4223A97EB00E3E7FC /* NEWS */ = {isa = PBXFileReference; lastKnownFileType = text; path = NEWS; sourceTree = "<group>"; };
+		ED0AF1B5223A97EB00E3E7FC /* random_seed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = random_seed.h; sourceTree = "<group>"; };
+		ED0AF1B6223A97EB00E3E7FC /* json.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
+		ED0AF1B7223A97EB00E3E7FC /* json_c_version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_c_version.h; sourceTree = "<group>"; };
+		ED0AF1B8223A97EB00E3E7FC /* json_object_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_object_private.h; sourceTree = "<group>"; };
+		ED0AF1BD223A97EB00E3E7FC /* arraylist.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = arraylist.h; sourceTree = "<group>"; };
+		ED0AF1BF223A97EB00E3E7FC /* linkhash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = linkhash.h; sourceTree = "<group>"; };
+		ED0AF1C1223A97EB00E3E7FC /* json_tokener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_tokener.h; sourceTree = "<group>"; };
+		ED0AF1C2223A97EB00E3E7FC /* json_object_iterator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_object_iterator.h; sourceTree = "<group>"; };
+		ED0AF1C5223A97EB00E3E7FC /* json_util.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = json_util.c; sourceTree = "<group>"; };
+		ED0AF1C6223A97EB00E3E7FC /* json_inttypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_inttypes.h; sourceTree = "<group>"; };
+		ED0AF1C7223A97EB00E3E7FC /* bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
+		ED0AF1C8223A97EB00E3E7FC /* json_object.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_object.h; sourceTree = "<group>"; };
+		ED0AF1CA223AA68000E3E7FC /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -251,6 +298,7 @@
 		ED0AF0D3223807FF00E3E7FC /* thirdparty */ = {
 			isa = PBXGroup;
 			children = (
+				ED0AF15F223A97EB00E3E7FC /* json-c */,
 				ED0AF157223969B700E3E7FC /* esp32_ws281x */,
 				ED0AF0D4223807FF00E3E7FC /* sqlite3pp */,
 				ED0AF0FB223807FF00E3E7FC /* slre */,
@@ -297,6 +345,48 @@
 				ED0AF159223969B700E3E7FC /* esp32_ws281x.h */,
 			);
 			path = esp32_ws281x;
+			sourceTree = "<group>";
+		};
+		ED0AF15F223A97EB00E3E7FC /* json-c */ = {
+			isa = PBXGroup;
+			children = (
+				ED0AF1CA223AA68000E3E7FC /* config.h */,
+				ED0AF171223A97EB00E3E7FC /* arraylist.c */,
+				ED0AF1BD223A97EB00E3E7FC /* arraylist.h */,
+				ED0AF16B223A97EB00E3E7FC /* AUTHORS */,
+				ED0AF1C7223A97EB00E3E7FC /* bits.h */,
+				ED0AF16A223A97EB00E3E7FC /* ChangeLog */,
+				ED0AF1B3223A97EB00E3E7FC /* compile */,
+				ED0AF1B1223A97EB00E3E7FC /* COPYING */,
+				ED0AF1AF223A97EB00E3E7FC /* debug.c */,
+				ED0AF164223A97EB00E3E7FC /* debug.h */,
+				ED0AF166223A97EB00E3E7FC /* INSTALL */,
+				ED0AF169223A97EB00E3E7FC /* json_c_version.c */,
+				ED0AF1B7223A97EB00E3E7FC /* json_c_version.h */,
+				ED0AF1A7223A97EB00E3E7FC /* json_config.h */,
+				ED0AF1C6223A97EB00E3E7FC /* json_inttypes.h */,
+				ED0AF16C223A97EB00E3E7FC /* json_object_iterator.c */,
+				ED0AF1C2223A97EB00E3E7FC /* json_object_iterator.h */,
+				ED0AF1B8223A97EB00E3E7FC /* json_object_private.h */,
+				ED0AF1A3223A97EB00E3E7FC /* json_object.c */,
+				ED0AF1C8223A97EB00E3E7FC /* json_object.h */,
+				ED0AF16E223A97EB00E3E7FC /* json_tokener.c */,
+				ED0AF1C1223A97EB00E3E7FC /* json_tokener.h */,
+				ED0AF1C5223A97EB00E3E7FC /* json_util.c */,
+				ED0AF1AA223A97EB00E3E7FC /* json_util.h */,
+				ED0AF1B6223A97EB00E3E7FC /* json.h */,
+				ED0AF1A8223A97EB00E3E7FC /* libjson.c */,
+				ED0AF16D223A97EB00E3E7FC /* linkhash.c */,
+				ED0AF1BF223A97EB00E3E7FC /* linkhash.h */,
+				ED0AF162223A97EB00E3E7FC /* math_compat.h */,
+				ED0AF1B4223A97EB00E3E7FC /* NEWS */,
+				ED0AF1B2223A97EB00E3E7FC /* printbuf.c */,
+				ED0AF161223A97EB00E3E7FC /* printbuf.h */,
+				ED0AF160223A97EB00E3E7FC /* random_seed.c */,
+				ED0AF1B5223A97EB00E3E7FC /* random_seed.h */,
+				ED0AF1AD223A97EB00E3E7FC /* README */,
+			);
+			path = "json-c";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -355,18 +445,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED0AF1CC223AB6CE00E3E7FC /* jsonobject.cpp in Sources */,
 				ED0AF107223807FF00E3E7FC /* utils.cpp in Sources */,
 				ED0AF1432238089700E3E7FC /* logger.cpp in Sources */,
+				ED0AF1D3223ABAAC00E3E7FC /* linkhash.c in Sources */,
+				ED0AF1D1223ABAAC00E3E7FC /* json_tokener.c in Sources */,
 				ED0AF1442238089700E3E7FC /* error.cpp in Sources */,
+				ED0AF1CD223ABAAC00E3E7FC /* arraylist.c in Sources */,
 				ED0AF1552239592000E3E7FC /* esp_main.c in Sources */,
 				ED0AF1532238199B00E3E7FC /* p44utils_main.cpp in Sources */,
 				ED0AF15622395F2700E3E7FC /* ledchaincomm.cpp in Sources */,
+				ED0AF1CF223ABAAC00E3E7FC /* json_c_version.c in Sources */,
+				ED0AF1D5223ABAAC00E3E7FC /* random_seed.c in Sources */,
+				ED0AF1CB223AB6CE00E3E7FC /* jsoncomm.cpp in Sources */,
 				ED0AF15E22397D0800E3E7FC /* wifi_init.c in Sources */,
 				ED0AF15B223975CE00E3E7FC /* socketcomm.cpp in Sources */,
 				ED0AF14F223814A100E3E7FC /* fdcomm.cpp in Sources */,
 				ED0AF1512238157C00E3E7FC /* application.cpp in Sources */,
 				ED0AF1422238089700E3E7FC /* p44obj.cpp in Sources */,
+				ED0AF1D4223ABAAC00E3E7FC /* printbuf.c in Sources */,
 				ED0AF1452238089700E3E7FC /* mainloop.cpp in Sources */,
+				ED0AF1D0223ABAAC00E3E7FC /* json_object_iterator.c in Sources */,
+				ED0AF1CE223ABAAC00E3E7FC /* debug.c in Sources */,
+				ED0AF1D6223ABB1900E3E7FC /* json_object.c in Sources */,
+				ED0AF1D2223ABAAC00E3E7FC /* json_util.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

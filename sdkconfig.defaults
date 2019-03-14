@@ -1,1 +1,5 @@
+# standard deug device on luz' macOS
 CONFIG_ESPTOOLPY_PORT="/dev/cu.SLAB_USBtoUART"
+
+# needed for ioctl FIONREAD to work
+CONFIG_LWIP_SO_RCVBUF=y
