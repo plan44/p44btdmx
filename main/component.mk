@@ -9,4 +9,6 @@
 
 #include $(IDF_PATH)/make/component_common.mk
 
-CPPFLAGS += -isystem /Volumes/CaseSens/openwrt/build_dir/target-mipsel_24kc_musl/boost_1_67_0
+CPPFLAGS += -isystem /Volumes/CaseSens/openwrt/build_dir/target-mipsel_24kc_musl/boost_1_71_0
+
+# %%%ugly hack above ^^^^^^ for now%%% just take a boost checkout we already have

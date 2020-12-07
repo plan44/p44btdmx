@@ -3,7 +3,8 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := p44utils-test
+PROJECT_NAME := p44utils_demo
+
+COMPONENT_ADD_INCLUDEDIRS := components/include
 
 include $(IDF_PATH)/make/project.mk
-

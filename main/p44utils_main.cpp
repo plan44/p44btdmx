@@ -11,9 +11,14 @@
 #include "ledchaincomm.hpp"
 #include "socketcomm.hpp"
 #include "jsoncomm.hpp"
+#include "digitalio.hpp"
 
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
+
+// TODO: move to p44utils GPIO
+#include "driver/gpio.h"
+
 #endif
 
 using namespace p44;
@@ -28,6 +33,7 @@ class P44HelloWorld : public Application
   int counter;
   LEDChainCommPtr ledChain;
   SocketCommPtr apiServer;
+  DigitalIoPtr ledChainEnable;
 
 public:
 
@@ -58,7 +64,11 @@ public:
     apiServer->setAllowNonlocalConnections(true);
     ErrorPtr err = apiServer->startServer(boost::bind(&P44HelloWorld::apiConnectionHandler, this, _1), 10);
     // ledchain
-    ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio19", NUM_LEDS));
+    ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
+//    gpio_set_direction(GPIO_NUM_25, GPIO_MODE_OUTPUT);
+//    gpio_set_level(GPIO_NUM_25, 0); // enable
+    // %%%%
+    ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio23", NUM_LEDS));
     ledChain->begin();
     // second counter
     counterTicket.executeOnce(boost::bind(&P44HelloWorld::count, this, _1));
@@ -77,7 +87,7 @@ public:
   void gotData(SocketCommPtr aConn, ErrorPtr aError)
   {
     if (!Error::isOK(aError)) {
-      LOG(LOG_ERR, "Error: %s", Error::text(aError).c_str());
+      LOG(LOG_ERR, "Error: %s", Error::text(aError));
     }
     else {
       string s;
@@ -90,7 +100,7 @@ public:
   void gotMessage(ErrorPtr aError, JsonObjectPtr aJsonObject)
   {
     if (!Error::isOK(aError)) {
-      LOG(LOG_ERR, "Error: %s", Error::text(aError).c_str());
+      LOG(LOG_ERR, "Error: %s", Error::text(aError));
     }
     else {
       LOG(LOG_NOTICE, "Got Json Object: %s", aJsonObject ? aJsonObject->c_strValue() : "<none>");

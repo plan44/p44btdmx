@@ -31,6 +31,31 @@
 		ED0AF1D4223ABAAC00E3E7FC /* printbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1B2223A97EB00E3E7FC /* printbuf.c */; };
 		ED0AF1D5223ABAAC00E3E7FC /* random_seed.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF160223A97EB00E3E7FC /* random_seed.c */; };
 		ED0AF1D6223ABB1900E3E7FC /* json_object.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1A3223A97EB00E3E7FC /* json_object.c */; };
+		EDE91E3F257E8AFE00AFEAE8 /* p44script.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E32257E8AFD00AFEAE8 /* p44script.cpp */; };
+		EDE91E40257E8AFE00AFEAE8 /* valueanimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E33257E8AFD00AFEAE8 /* valueanimator.cpp */; };
+		EDE91E41257E8AFE00AFEAE8 /* dcmotor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E39257E8AFE00AFEAE8 /* dcmotor.cpp */; };
+		EDE91E42257E8AFE00AFEAE8 /* timeutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E3A257E8AFE00AFEAE8 /* timeutils.cpp */; };
+		EDE91E43257E8AFE00AFEAE8 /* extutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E3C257E8AFE00AFEAE8 /* extutils.cpp */; };
+		EDE91E6A257ED6F200AFEAE8 /* coloreffectview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E4B257ED6F200AFEAE8 /* coloreffectview.cpp */; };
+		EDE91E6B257ED6F200AFEAE8 /* lightspotview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E4C257ED6F200AFEAE8 /* lightspotview.cpp */; };
+		EDE91E6C257ED6F200AFEAE8 /* epxview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E4E257ED6F200AFEAE8 /* epxview.cpp */; };
+		EDE91E6D257ED6F200AFEAE8 /* viewscroller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E53257ED6F200AFEAE8 /* viewscroller.cpp */; };
+		EDE91E6E257ED6F200AFEAE8 /* imageview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E56257ED6F200AFEAE8 /* imageview.cpp */; };
+		EDE91E6F257ED6F200AFEAE8 /* viewstack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E5A257ED6F200AFEAE8 /* viewstack.cpp */; };
+		EDE91E70257ED6F200AFEAE8 /* canvasview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E5B257ED6F200AFEAE8 /* canvasview.cpp */; };
+		EDE91E71257ED6F200AFEAE8 /* viewfactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E5D257ED6F200AFEAE8 /* viewfactory.cpp */; };
+		EDE91E72257ED6F200AFEAE8 /* p44view.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E62257ED6F200AFEAE8 /* p44view.cpp */; };
+		EDE91E73257ED6F200AFEAE8 /* textview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E63257ED6F200AFEAE8 /* textview.cpp */; };
+		EDE91E74257ED6F200AFEAE8 /* viewsequencer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E64257ED6F200AFEAE8 /* viewsequencer.cpp */; };
+		EDE91E75257ED6F200AFEAE8 /* lifeview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E66257ED6F200AFEAE8 /* lifeview.cpp */; };
+		EDE91E76257ED6F200AFEAE8 /* torchview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E67257ED6F200AFEAE8 /* torchview.cpp */; };
+		EDE91E7F257F930B00AFEAE8 /* analogio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF099223807FE00E3E7FC /* analogio.cpp */; };
+		EDE91E81257F931B00AFEAE8 /* digitalio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0B4223807FE00E3E7FC /* digitalio.cpp */; };
+		EDE91E83257F933D00AFEAE8 /* spi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0B6223807FE00E3E7FC /* spi.cpp */; };
+		EDE91E84257F933D00AFEAE8 /* i2c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF086223807FE00E3E7FC /* i2c.cpp */; };
+		EDE91E86257F936400AFEAE8 /* iopin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0C8223807FE00E3E7FC /* iopin.cpp */; };
+		EDE91E88257F939000AFEAE8 /* colorutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF094223807FE00E3E7FC /* colorutils.cpp */; };
+		EDE91E8A257F93A900AFEAE8 /* pwm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0BF223807FE00E3E7FC /* pwm.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -172,6 +197,54 @@
 		ED0AF1C7223A97EB00E3E7FC /* bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
 		ED0AF1C8223A97EB00E3E7FC /* json_object.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json_object.h; sourceTree = "<group>"; };
 		ED0AF1CA223AA68000E3E7FC /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		EDE91E31257E623C00AFEAE8 /* p44utils_config.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44utils_config.hpp; sourceTree = "<group>"; };
+		EDE91E32257E8AFD00AFEAE8 /* p44script.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44script.cpp; sourceTree = "<group>"; };
+		EDE91E33257E8AFD00AFEAE8 /* valueanimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = valueanimator.cpp; sourceTree = "<group>"; };
+		EDE91E34257E8AFD00AFEAE8 /* dcmotor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dcmotor.hpp; sourceTree = "<group>"; };
+		EDE91E35257E8AFE00AFEAE8 /* timeutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = timeutils.hpp; sourceTree = "<group>"; };
+		EDE91E36257E8AFE00AFEAE8 /* p44script.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44script.hpp; sourceTree = "<group>"; };
+		EDE91E37257E8AFE00AFEAE8 /* p44utils_config_TEMPLATE.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44utils_config_TEMPLATE.hpp; sourceTree = "<group>"; };
+		EDE91E38257E8AFE00AFEAE8 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		EDE91E39257E8AFE00AFEAE8 /* dcmotor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dcmotor.cpp; sourceTree = "<group>"; };
+		EDE91E3A257E8AFE00AFEAE8 /* timeutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timeutils.cpp; sourceTree = "<group>"; };
+		EDE91E3B257E8AFE00AFEAE8 /* extutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = extutils.hpp; sourceTree = "<group>"; };
+		EDE91E3C257E8AFE00AFEAE8 /* extutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = extutils.cpp; sourceTree = "<group>"; };
+		EDE91E3D257E8AFE00AFEAE8 /* p44utils_minimal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44utils_minimal.hpp; sourceTree = "<group>"; };
+		EDE91E3E257E8AFE00AFEAE8 /* valueanimator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = valueanimator.hpp; sourceTree = "<group>"; };
+		EDE91E46257ED6F200AFEAE8 /* lifeview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = lifeview.hpp; sourceTree = "<group>"; };
+		EDE91E47257ED6F200AFEAE8 /* p44lrg_config_TEMPLATE.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44lrg_config_TEMPLATE.hpp; sourceTree = "<group>"; };
+		EDE91E48257ED6F200AFEAE8 /* torchview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = torchview.hpp; sourceTree = "<group>"; };
+		EDE91E49257ED6F200AFEAE8 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		EDE91E4B257ED6F200AFEAE8 /* coloreffectview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coloreffectview.cpp; sourceTree = "<group>"; };
+		EDE91E4C257ED6F200AFEAE8 /* lightspotview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lightspotview.cpp; sourceTree = "<group>"; };
+		EDE91E4D257ED6F200AFEAE8 /* viewstack.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = viewstack.hpp; sourceTree = "<group>"; };
+		EDE91E4E257ED6F200AFEAE8 /* epxview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = epxview.cpp; sourceTree = "<group>"; };
+		EDE91E4F257ED6F200AFEAE8 /* canvasview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = canvasview.hpp; sourceTree = "<group>"; };
+		EDE91E50257ED6F200AFEAE8 /* Kconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Kconfig; sourceTree = "<group>"; };
+		EDE91E51257ED6F200AFEAE8 /* viewfactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = viewfactory.hpp; sourceTree = "<group>"; };
+		EDE91E52257ED6F200AFEAE8 /* component.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = component.mk; sourceTree = "<group>"; };
+		EDE91E53257ED6F200AFEAE8 /* viewscroller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = viewscroller.cpp; sourceTree = "<group>"; };
+		EDE91E54257ED6F200AFEAE8 /* p44view.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44view.hpp; sourceTree = "<group>"; };
+		EDE91E55257ED6F200AFEAE8 /* textview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = textview.hpp; sourceTree = "<group>"; };
+		EDE91E56257ED6F200AFEAE8 /* imageview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imageview.cpp; sourceTree = "<group>"; };
+		EDE91E57257ED6F200AFEAE8 /* viewsequencer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = viewsequencer.hpp; sourceTree = "<group>"; };
+		EDE91E58257ED6F200AFEAE8 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		EDE91E59257ED6F200AFEAE8 /* epxview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = epxview.hpp; sourceTree = "<group>"; };
+		EDE91E5A257ED6F200AFEAE8 /* viewstack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = viewstack.cpp; sourceTree = "<group>"; };
+		EDE91E5B257ED6F200AFEAE8 /* canvasview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = canvasview.cpp; sourceTree = "<group>"; };
+		EDE91E5D257ED6F200AFEAE8 /* viewfactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = viewfactory.cpp; sourceTree = "<group>"; };
+		EDE91E5E257ED6F200AFEAE8 /* p44lrg_common.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44lrg_common.hpp; sourceTree = "<group>"; };
+		EDE91E5F257ED6F200AFEAE8 /* viewscroller.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = viewscroller.hpp; sourceTree = "<group>"; };
+		EDE91E62257ED6F200AFEAE8 /* p44view.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44view.cpp; sourceTree = "<group>"; };
+		EDE91E63257ED6F200AFEAE8 /* textview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textview.cpp; sourceTree = "<group>"; };
+		EDE91E64257ED6F200AFEAE8 /* viewsequencer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = viewsequencer.cpp; sourceTree = "<group>"; };
+		EDE91E65257ED6F200AFEAE8 /* imageview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = imageview.hpp; sourceTree = "<group>"; };
+		EDE91E66257ED6F200AFEAE8 /* lifeview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lifeview.cpp; sourceTree = "<group>"; };
+		EDE91E67257ED6F200AFEAE8 /* torchview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = torchview.cpp; sourceTree = "<group>"; };
+		EDE91E68257ED6F200AFEAE8 /* coloreffectview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = coloreffectview.hpp; sourceTree = "<group>"; };
+		EDE91E69257ED6F200AFEAE8 /* lightspotview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = lightspotview.hpp; sourceTree = "<group>"; };
+		EDE91E7B257ED7C500AFEAE8 /* component.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = component.mk; sourceTree = "<group>"; };
+		EDE91E7D257F90E100AFEAE8 /* p44lrg_config.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44lrg_config.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +278,7 @@
 		ED0AF080223807FE00E3E7FC /* components */ = {
 			isa = PBXGroup;
 			children = (
+				EDE91E45257ED6F200AFEAE8 /* p44lrgraphics */,
 				ED0AF081223807FE00E3E7FC /* p44utils */,
 			);
 			path = components;
@@ -213,9 +287,22 @@
 		ED0AF081223807FE00E3E7FC /* p44utils */ = {
 			isa = PBXGroup;
 			children = (
-				ED0AF0B1223807FE00E3E7FC /* component.mk */,
-				ED0AF0A0223807FE00E3E7FC /* Kconfig */,
 				ED0AF0D3223807FF00E3E7FC /* thirdparty */,
+				EDE91E38257E8AFE00AFEAE8 /* CMakeLists.txt */,
+				ED0AF0A0223807FE00E3E7FC /* Kconfig */,
+				ED0AF0B1223807FE00E3E7FC /* component.mk */,
+				EDE91E39257E8AFE00AFEAE8 /* dcmotor.cpp */,
+				EDE91E34257E8AFD00AFEAE8 /* dcmotor.hpp */,
+				EDE91E3C257E8AFE00AFEAE8 /* extutils.cpp */,
+				EDE91E3B257E8AFE00AFEAE8 /* extutils.hpp */,
+				EDE91E32257E8AFD00AFEAE8 /* p44script.cpp */,
+				EDE91E36257E8AFE00AFEAE8 /* p44script.hpp */,
+				EDE91E37257E8AFE00AFEAE8 /* p44utils_config_TEMPLATE.hpp */,
+				EDE91E3D257E8AFE00AFEAE8 /* p44utils_minimal.hpp */,
+				EDE91E3A257E8AFE00AFEAE8 /* timeutils.cpp */,
+				EDE91E35257E8AFE00AFEAE8 /* timeutils.hpp */,
+				EDE91E33257E8AFD00AFEAE8 /* valueanimator.cpp */,
+				EDE91E3E257E8AFE00AFEAE8 /* valueanimator.hpp */,
 				ED0AF0B2223807FE00E3E7FC /* p44utils_common.hpp */,
 				ED0AF100223807FF00E3E7FC /* p44obj.cpp */,
 				ED0AF08E223807FE00E3E7FC /* p44obj.hpp */,
@@ -329,8 +416,10 @@
 		ED0AF1462238092800E3E7FC /* main */ = {
 			isa = PBXGroup;
 			children = (
+				EDE91E7D257F90E100AFEAE8 /* p44lrg_config.hpp */,
 				ED0AF1482238092800E3E7FC /* component.mk */,
 				ED0AF1542239592000E3E7FC /* esp_main.c */,
+				EDE91E31257E623C00AFEAE8 /* p44utils_config.hpp */,
 				ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */,
 				ED0AF15C22397D0800E3E7FC /* wifi_init.h */,
 				ED0AF15D22397D0800E3E7FC /* wifi_init.c */,
@@ -389,6 +478,46 @@
 			path = "json-c";
 			sourceTree = "<group>";
 		};
+		EDE91E45257ED6F200AFEAE8 /* p44lrgraphics */ = {
+			isa = PBXGroup;
+			children = (
+				EDE91E49257ED6F200AFEAE8 /* CMakeLists.txt */,
+				EDE91E7B257ED7C500AFEAE8 /* component.mk */,
+				EDE91E50257ED6F200AFEAE8 /* Kconfig */,
+				EDE91E5B257ED6F200AFEAE8 /* canvasview.cpp */,
+				EDE91E4F257ED6F200AFEAE8 /* canvasview.hpp */,
+				EDE91E4B257ED6F200AFEAE8 /* coloreffectview.cpp */,
+				EDE91E68257ED6F200AFEAE8 /* coloreffectview.hpp */,
+				EDE91E52257ED6F200AFEAE8 /* component.mk */,
+				EDE91E4E257ED6F200AFEAE8 /* epxview.cpp */,
+				EDE91E59257ED6F200AFEAE8 /* epxview.hpp */,
+				EDE91E56257ED6F200AFEAE8 /* imageview.cpp */,
+				EDE91E65257ED6F200AFEAE8 /* imageview.hpp */,
+				EDE91E66257ED6F200AFEAE8 /* lifeview.cpp */,
+				EDE91E46257ED6F200AFEAE8 /* lifeview.hpp */,
+				EDE91E4C257ED6F200AFEAE8 /* lightspotview.cpp */,
+				EDE91E69257ED6F200AFEAE8 /* lightspotview.hpp */,
+				EDE91E5E257ED6F200AFEAE8 /* p44lrg_common.hpp */,
+				EDE91E47257ED6F200AFEAE8 /* p44lrg_config_TEMPLATE.hpp */,
+				EDE91E62257ED6F200AFEAE8 /* p44view.cpp */,
+				EDE91E54257ED6F200AFEAE8 /* p44view.hpp */,
+				EDE91E58257ED6F200AFEAE8 /* README.md */,
+				EDE91E63257ED6F200AFEAE8 /* textview.cpp */,
+				EDE91E55257ED6F200AFEAE8 /* textview.hpp */,
+				EDE91E67257ED6F200AFEAE8 /* torchview.cpp */,
+				EDE91E48257ED6F200AFEAE8 /* torchview.hpp */,
+				EDE91E5D257ED6F200AFEAE8 /* viewfactory.cpp */,
+				EDE91E51257ED6F200AFEAE8 /* viewfactory.hpp */,
+				EDE91E53257ED6F200AFEAE8 /* viewscroller.cpp */,
+				EDE91E5F257ED6F200AFEAE8 /* viewscroller.hpp */,
+				EDE91E64257ED6F200AFEAE8 /* viewsequencer.cpp */,
+				EDE91E57257ED6F200AFEAE8 /* viewsequencer.hpp */,
+				EDE91E5A257ED6F200AFEAE8 /* viewstack.cpp */,
+				EDE91E4D257ED6F200AFEAE8 /* viewstack.hpp */,
+			);
+			path = p44lrgraphics;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -445,30 +574,55 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDE91E41257E8AFE00AFEAE8 /* dcmotor.cpp in Sources */,
 				ED0AF1CC223AB6CE00E3E7FC /* jsonobject.cpp in Sources */,
 				ED0AF107223807FF00E3E7FC /* utils.cpp in Sources */,
 				ED0AF1432238089700E3E7FC /* logger.cpp in Sources */,
+				EDE91E6E257ED6F200AFEAE8 /* imageview.cpp in Sources */,
+				EDE91E6C257ED6F200AFEAE8 /* epxview.cpp in Sources */,
+				EDE91E83257F933D00AFEAE8 /* spi.cpp in Sources */,
 				ED0AF1D3223ABAAC00E3E7FC /* linkhash.c in Sources */,
 				ED0AF1D1223ABAAC00E3E7FC /* json_tokener.c in Sources */,
+				EDE91E73257ED6F200AFEAE8 /* textview.cpp in Sources */,
+				EDE91E42257E8AFE00AFEAE8 /* timeutils.cpp in Sources */,
 				ED0AF1442238089700E3E7FC /* error.cpp in Sources */,
 				ED0AF1CD223ABAAC00E3E7FC /* arraylist.c in Sources */,
 				ED0AF1552239592000E3E7FC /* esp_main.c in Sources */,
+				EDE91E84257F933D00AFEAE8 /* i2c.cpp in Sources */,
 				ED0AF1532238199B00E3E7FC /* p44utils_main.cpp in Sources */,
 				ED0AF15622395F2700E3E7FC /* ledchaincomm.cpp in Sources */,
 				ED0AF1CF223ABAAC00E3E7FC /* json_c_version.c in Sources */,
+				EDE91E74257ED6F200AFEAE8 /* viewsequencer.cpp in Sources */,
+				EDE91E76257ED6F200AFEAE8 /* torchview.cpp in Sources */,
 				ED0AF1D5223ABAAC00E3E7FC /* random_seed.c in Sources */,
+				EDE91E43257E8AFE00AFEAE8 /* extutils.cpp in Sources */,
+				EDE91E86257F936400AFEAE8 /* iopin.cpp in Sources */,
+				EDE91E81257F931B00AFEAE8 /* digitalio.cpp in Sources */,
 				ED0AF1CB223AB6CE00E3E7FC /* jsoncomm.cpp in Sources */,
 				ED0AF15E22397D0800E3E7FC /* wifi_init.c in Sources */,
+				EDE91E75257ED6F200AFEAE8 /* lifeview.cpp in Sources */,
+				EDE91E6F257ED6F200AFEAE8 /* viewstack.cpp in Sources */,
 				ED0AF15B223975CE00E3E7FC /* socketcomm.cpp in Sources */,
 				ED0AF14F223814A100E3E7FC /* fdcomm.cpp in Sources */,
+				EDE91E70257ED6F200AFEAE8 /* canvasview.cpp in Sources */,
+				EDE91E88257F939000AFEAE8 /* colorutils.cpp in Sources */,
+				EDE91E6B257ED6F200AFEAE8 /* lightspotview.cpp in Sources */,
 				ED0AF1512238157C00E3E7FC /* application.cpp in Sources */,
 				ED0AF1422238089700E3E7FC /* p44obj.cpp in Sources */,
 				ED0AF1D4223ABAAC00E3E7FC /* printbuf.c in Sources */,
 				ED0AF1452238089700E3E7FC /* mainloop.cpp in Sources */,
 				ED0AF1D0223ABAAC00E3E7FC /* json_object_iterator.c in Sources */,
+				EDE91E8A257F93A900AFEAE8 /* pwm.cpp in Sources */,
+				EDE91E72257ED6F200AFEAE8 /* p44view.cpp in Sources */,
+				EDE91E71257ED6F200AFEAE8 /* viewfactory.cpp in Sources */,
 				ED0AF1CE223ABAAC00E3E7FC /* debug.c in Sources */,
+				EDE91E6A257ED6F200AFEAE8 /* coloreffectview.cpp in Sources */,
+				EDE91E6D257ED6F200AFEAE8 /* viewscroller.cpp in Sources */,
 				ED0AF1D6223ABB1900E3E7FC /* json_object.c in Sources */,
 				ED0AF1D2223ABAAC00E3E7FC /* json_util.c in Sources */,
+				EDE91E40257E8AFE00AFEAE8 /* valueanimator.cpp in Sources */,
+				EDE91E7F257F930B00AFEAE8 /* analogio.cpp in Sources */,
+				EDE91E3F257E8AFE00AFEAE8 /* p44script.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
