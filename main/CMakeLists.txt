@@ -2,6 +2,7 @@ idf_component_register(
   SRCS
   "esp_main.c"
   "p44utils_main.cpp"
+  "esp_bt.cpp"
   "wifi_init.c"
   INCLUDE_DIRS ".")
 

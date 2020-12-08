@@ -13,6 +13,8 @@
 #include "jsoncomm.hpp"
 #include "digitalio.hpp"
 
+#include "esp_bt.hpp"
+
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
 
@@ -65,14 +67,25 @@ public:
     ErrorPtr err = apiServer->startServer(boost::bind(&P44HelloWorld::apiConnectionHandler, this, _1), 10);
     // ledchain
     ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
-//    gpio_set_direction(GPIO_NUM_25, GPIO_MODE_OUTPUT);
-//    gpio_set_level(GPIO_NUM_25, 0); // enable
-    // %%%%
     ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio23", NUM_LEDS));
     ledChain->begin();
     // second counter
     counterTicket.executeOnce(boost::bind(&P44HelloWorld::count, this, _1));
+    // start scanning BLE advertisements
+    BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));
   }
+
+
+  void gotAdvertisement(ErrorPtr aError, const string aAdvData)
+  {
+    if (!Error::isOK(aError)) {
+      LOG(LOG_ERR, "Error: %s", Error::text(aError));
+    }
+    else {
+      LOG(LOG_NOTICE, "Got advData: %s", binaryToHexString(aAdvData,' ').c_str());
+    }
+  }
+
 
 
   SocketCommPtr apiConnectionHandler(SocketCommPtr aServerSocketCommP)
