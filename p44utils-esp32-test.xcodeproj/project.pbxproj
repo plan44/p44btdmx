@@ -57,6 +57,7 @@
 		EDE91E88257F939000AFEAE8 /* colorutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF094223807FE00E3E7FC /* colorutils.cpp */; };
 		EDE91E8A257F93A900AFEAE8 /* pwm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0BF223807FE00E3E7FC /* pwm.cpp */; };
 		EDE91E8E257FE59D00AFEAE8 /* esp_bt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E8C257FE59D00AFEAE8 /* esp_bt.cpp */; };
+		EDE91E992580E81300AFEAE8 /* p44btdmx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E972580E81300AFEAE8 /* p44btdmx.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -249,6 +250,8 @@
 		EDE91E8C257FE59D00AFEAE8 /* esp_bt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = esp_bt.cpp; sourceTree = "<group>"; };
 		EDE91E8D257FE59D00AFEAE8 /* esp_bt.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = esp_bt.hpp; sourceTree = "<group>"; };
 		EDE91E96257FFFB200AFEAE8 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		EDE91E972580E81300AFEAE8 /* p44btdmx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44btdmx.cpp; sourceTree = "<group>"; };
+		EDE91E982580E81300AFEAE8 /* p44btdmx.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44btdmx.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -425,6 +428,8 @@
 				EDE91E7D257F90E100AFEAE8 /* p44lrg_config.hpp */,
 				EDE91E31257E623C00AFEAE8 /* p44utils_config.hpp */,
 				ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */,
+				EDE91E972580E81300AFEAE8 /* p44btdmx.cpp */,
+				EDE91E982580E81300AFEAE8 /* p44btdmx.hpp */,
 				ED0AF15C22397D0800E3E7FC /* wifi_init.h */,
 				ED0AF15D22397D0800E3E7FC /* wifi_init.c */,
 				EDE91E8C257FE59D00AFEAE8 /* esp_bt.cpp */,
@@ -600,6 +605,7 @@
 				ED0AF15622395F2700E3E7FC /* ledchaincomm.cpp in Sources */,
 				ED0AF1CF223ABAAC00E3E7FC /* json_c_version.c in Sources */,
 				EDE91E8E257FE59D00AFEAE8 /* esp_bt.cpp in Sources */,
+				EDE91E992580E81300AFEAE8 /* p44btdmx.cpp in Sources */,
 				EDE91E74257ED6F200AFEAE8 /* viewsequencer.cpp in Sources */,
 				EDE91E76257ED6F200AFEAE8 /* torchview.cpp in Sources */,
 				ED0AF1D5223ABAAC00E3E7FC /* random_seed.c in Sources */,

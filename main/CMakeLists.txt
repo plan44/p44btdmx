@@ -3,6 +3,7 @@ idf_component_register(
   "esp_main.c"
   "p44utils_main.cpp"
   "esp_bt.cpp"
+  "p44btdmx.cpp"
   "wifi_init.c"
   INCLUDE_DIRS ".")
 

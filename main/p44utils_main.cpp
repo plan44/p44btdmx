@@ -14,14 +14,18 @@
 #include "digitalio.hpp"
 
 #include "esp_bt.hpp"
+#include "p44btdmx.hpp"
 
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
-
-// TODO: move to p44utils GPIO
-#include "driver/gpio.h"
-
 #endif
+
+
+// TODO: remove this test stuff
+#define JSONAPI 0 // JSON socket API
+#define TEST 1 // tests (inlcuding direct LED)
+#define NUM_LEDS 10 // number of LEDs for direct test, 0=none
+
 
 using namespace p44;
 
@@ -31,11 +35,19 @@ class P44HelloWorld : public Application
 {
   typedef Application inherited;
 
+  #if TEST
   MLTicket counterTicket;
   int counter;
+  #if NUM_LEDS
   LEDChainCommPtr ledChain;
+  #endif
+  #endif
+  #if JSONAPI
   SocketCommPtr apiServer;
-  DigitalIoPtr ledChainEnable;
+  #endif
+
+  DigitalIoPtr ledChainEnable; ///< output in P44-BTLC for enabling the 5V WS281x drivers (active low)
+  P44BTDMXreceiverPtr dmxReceiver; ///< p44 BT DMX receiver
 
 public:
 
@@ -55,22 +67,29 @@ public:
     return run();
   }
 
-  #define NUM_LEDS 10
-
   virtual void initialize()
   {
     LOG(LOG_NOTICE,"initialize");
+    // enable LED chain outputs in P44-BTLC
+    ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
+    // P44BTDMX receiver object
+    dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
+    #if JSONAPI
     // socket
     apiServer = SocketCommPtr(new SocketComm(MainLoop::currentMainLoop()));
     apiServer->setConnectionParams(NULL, "8842", SOCK_STREAM, PF_UNSPEC);
     apiServer->setAllowNonlocalConnections(true);
     ErrorPtr err = apiServer->startServer(boost::bind(&P44HelloWorld::apiConnectionHandler, this, _1), 10);
-    // ledchain
-    ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
+    #endif
+    #if TEST
+    #if NUM_LEDS>0
+    // ledchain direct test
     ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio23", NUM_LEDS));
     ledChain->begin();
+    #endif // NUM_LEDS>0
     // second counter
     counterTicket.executeOnce(boost::bind(&P44HelloWorld::count, this, _1));
+    #endif // TEST
     // start scanning BLE advertisements
     BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));
   }
@@ -82,16 +101,22 @@ public:
       LOG(LOG_ERR, "Error: %s", Error::text(aError));
     }
     else {
-      LOG(LOG_NOTICE, "Got advData: %s", binaryToHexString(aAdvData,' ').c_str());
+      FOCUSLOG("Got advData: %s", binaryToHexString(aAdvData,' ').c_str());
+      // fetch possible manufacturer specific data from advertisement
+      const uint8_t* adMfgData;
+      uint8_t adMfgDataSz;
+      if (BtAdvertisementReceiver::findADStruct((uint8_t *)aAdvData.c_str(), 0xFF, adMfgData, adMfgDataSz)) {
+        // let dmxreceiver handle it
+        dmxReceiver->processBTAdvMfgData(string((const char*)adMfgData, adMfgDataSz));
+      }
     }
   }
 
 
+  #if JSONAPI
 
   SocketCommPtr apiConnectionHandler(SocketCommPtr aServerSocketCommP)
   {
-//    SocketCommPtr conn = SocketCommPtr(new SocketComm(MainLoop::currentMainLoop()));
-//    conn->setReceiveHandler(boost::bind(&P44HelloWorld::gotData, this, conn, _1));
     JsonCommPtr conn = JsonCommPtr(new JsonComm(MainLoop::currentMainLoop()));
     conn->setMessageHandler(boost::bind(&P44HelloWorld::gotMessage, this, _1, _2));
     return conn;
@@ -128,6 +153,10 @@ public:
     }
   }
 
+  #endif // JSONAPI
+
+
+  #if TEST
 
   void count(MLTimer &aTimer)
   {
@@ -142,6 +171,8 @@ public:
     #endif
     counter++;
   }
+
+  #endif // TEST
 
 };
 
