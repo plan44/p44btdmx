@@ -59,7 +59,7 @@ BtAdvertisementReceiver::~BtAdvertisementReceiver()
 }
 
 
-static void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
+void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
   BtAdvertisementReceiver::sharedReceiver().gapCBHandler(event, param);
 }
@@ -168,6 +168,43 @@ void BtAdvertisementReceiver::stop()
   mAdvertisementCB = NULL;
   esp_ble_gap_stop_scanning();
 }
+
+
+// MARK: - Advertisemnt decoding utilities
+
+// - BT Advertisement data (AdvData) consists of 0..31 bytes (plus header containing randomized BT address)
+//   See BT core specs 2.3.1 "Advertisement PDUs"
+
+// - AdvData (0..31 bytes) data format consists of one or multiple "AD Structures" (BT core specs, 11, figure 11.1)
+
+// - AD Structures consist of a length byte, followed by a type byte, followed by type-specific data
+
+// - The AD Type byte numbers are specified in https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+// - The AD types are described in the BT core spec supplement, chapter 1.
+
+
+bool BtAdvertisementReceiver::findADStruct(const uint8_t* aAdvData, uint8_t aType, const uint8_t* &aStructData, uint8_t &aStructLen)
+{
+  const uint8_t maxAdvDataLen = 31;
+  uint8_t idx = 0;
+  while (idx<maxAdvDataLen) {
+    // length byte
+    uint8_t ln = aAdvData[idx];
+    if (ln<1 || idx+ln>maxAdvDataLen) break; // invalid
+    idx++;
+    // type byte
+    if (aAdvData[idx]==aType) {
+      // found requested structure type
+      idx++;
+      aStructLen = ln-1;
+      aStructData = aAdvData+idx;
+      return true;
+    }
+  }
+  return false; // not found
+}
+
+
 
 
 #else // ESP_PLATFORM
