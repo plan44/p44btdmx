@@ -44,8 +44,7 @@ using namespace p44;
 // MARK: - plan44 DMX over Bluetooth receiver
 
 P44BTDMXreceiver::P44BTDMXreceiver() :
-  mFirstLightNumber(0),
-  mNumLights(2)
+  mFirstLightNumber(0)
 {
   mSystemKey = DEFAULT_P44BTDMX_SYSTEM_KEY;
 }
@@ -162,7 +161,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
 {
   FOCUSLOG("Got p44BTDMX commands: %s", binaryToHexString(aP44BTDMXCmds,' ').c_str());
   // p44DMX delta update commands
-  // - address byte with 3*lightnumber+cmd, 0xFF = NOP command
+  // - address byte with 3*lightnumber+cmd, 0xFF = Extended command lead-in, second byte is command, 0xFF=NOP
   // - lightnumber: 0..84 (address div 3)
   // - cmd: 0..2 (address mod 3)
   //   - 0=brightness (B channel), 1 data byte
@@ -173,21 +172,31 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
   while (i<ln) {
     uint8_t addrCmd = aP44BTDMXCmds[i];
     if (addrCmd==0xFF) {
+      // Extended command
       i++;
+      if (i<ln) {
+        // get extended command byte
+        uint8_t extendedCmd = aP44BTDMXCmds[i++];
+        switch (extendedCmd) {
+          case 0xFF: break; // NOP command
+          default: break;
+        }
+      }
       continue;
     }
     int lightIndex = addrCmd / 3;
-    LOG(LOG_INFO, "Command for Global Light #%d (DMX: %d)", lightIndex, lightIndex*cLightBytes);
+    OLOG(LOG_INFO, "Command for Global Light #%d (DMX: %d)", lightIndex, lightIndex*cLightBytes);
     uint8_t cmd = addrCmd - 3*lightIndex; // modulo 3
     lightIndex -= mFirstLightNumber;
-    if (lightIndex>=mNumLights) lightIndex = -1; // not one of our lights
+    if (lightIndex>=lights.size()) lightIndex = -1; // not one of our lights
     if (i++>=ln) return; // error, not enough data: all commands have at least one byte
     switch (cmd) {
       case 0: {
         uint8_t b = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
-          LOG(LOG_INFO, "Light #%d: B = %d", lightIndex, b);
-          // TODO: actually modify light params
+          P44DMXLightPtr light = lights[lightIndex];
+          light->setChannel(2,b);
+          light->applyChannels();
         }
         break;
       }
@@ -197,8 +206,11 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         uint8_t s = aP44BTDMXCmds[i++];
         uint8_t b = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
-          LOG(LOG_INFO, "Light #%d: H = %d, S = %d, B = %d", lightIndex, h, s, b);
-          // TODO: actually modify light params
+          P44DMXLightPtr light = lights[lightIndex];
+          light->setChannel(0,h);
+          light->setChannel(1,s);
+          light->setChannel(2,b);
+          light->applyChannels();
         }
         break;
       }
@@ -207,8 +219,10 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         uint8_t pos = aP44BTDMXCmds[i++];
         uint8_t mode = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
-          LOG(LOG_INFO, "Light #%d: pos = %d, mode = %d", lightIndex, pos, mode);
-          // TODO: actually modify light params
+          P44DMXLightPtr light = lights[lightIndex];
+          light->setChannel(3,pos);
+          light->setChannel(4,mode);
+          light->applyChannels();
         }
         break;
       }
@@ -217,6 +231,64 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
     }
   }
 }
+
+
+void P44BTDMXreceiver::setAddressingInfo(int aFirstLightNumber)
+{
+  mFirstLightNumber = aFirstLightNumber;
+}
+
+
+void P44BTDMXreceiver::addLight(P44DMXLightPtr aLight)
+{
+  aLight->mGlobalLightOffset = mFirstLightNumber;
+  aLight->mLocalLightNumber = lights.size();
+  lights.push_back(aLight);
+  aLight->applyChannels(); // set initial state
+}
+
+
+
+
+
+// MARK: - plan44 DMX Light base class
+
+P44DMXLight::P44DMXLight() :
+  mLocalLightNumber(0),
+  mGlobalLightOffset(0)
+{
+  for (int i=0; i<cNumChannels; i++) {
+    channels[i].current = 1; // to trigger an initial update
+    channels[i].pending = 0;
+  }
+}
+
+
+P44DMXLight::~P44DMXLight()
+{
+}
+
+
+
+/// set single light channel
+void P44DMXLight::setChannel(uint8_t aChannelIndex, uint8_t aValue)
+{
+  if (aChannelIndex>=cNumChannels) return;
+  channels[aChannelIndex].pending = aValue;
+}
+
+
+void P44DMXLight::applyChannels()
+{
+  // confirm all channels applied
+  for (int i=0; i<cNumChannels; i++) {
+    if (channels[i].current!=channels[i].pending) {
+      OLOG(LOG_INFO,"Channel #%d changed from %d to %d", i, channels[i].current, channels[i].pending);
+      channels[i].current = channels[i].pending;
+    }
+  }
+}
+
 
 
 // MARK: - plan44 DMX over Bluetooth sender
@@ -367,7 +439,7 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
     if (mUniverse[i].age<255) mUniverse[i].age++;
   }
   // return the commands
-  LOG(LOG_NOTICE, "p44DMX delta cmds: %s", binaryToHexString(cmds, ' ').c_str());
+  OLOG(LOG_NOTICE, "p44DMX delta cmds: %s", binaryToHexString(cmds, ' ').c_str());
   return cmds;
 }
 
@@ -377,7 +449,7 @@ string P44BTDMXsender::generateP44BTDMXpayload(int aMaxBytes, int aMinBytes)
   string cmds = generateP44DMXcmds(aMaxBytes-2);
   int fill = aMaxBytes-2-cmds.size();
   if (fill>0) {
-    cmds.append(fill,0xFF); // fill up with NOP commands
+    cmds.append(fill,0xFF); // fill up with extended/NOP commands
   }
   return encodeP44BTDMXpayload(cmds);
 }

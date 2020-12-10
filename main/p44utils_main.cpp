@@ -15,6 +15,8 @@
 
 #include "esp_bt.hpp"
 #include "p44btdmx.hpp"
+#include "pwmlight.hpp"
+#include "p44lrglight.hpp"
 
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
@@ -23,7 +25,7 @@
 
 // TODO: remove this test stuff
 #define JSONAPI 0 // JSON socket API
-#define TEST 1 // tests (inlcuding direct LED)
+#define TEST 0 // tests (inlcuding direct LED)
 #define NUM_LEDS 10 // number of LEDs for direct test, 0=none
 
 
@@ -46,20 +48,23 @@ class P44HelloWorld : public Application
   SocketCommPtr apiServer;
   #endif
 
+  LEDChainArrangementPtr ledChainArrangement;
   DigitalIoPtr ledChainEnable; ///< output in P44-BTLC for enabling the 5V WS281x drivers (active low)
   P44BTDMXreceiverPtr dmxReceiver; ///< p44 BT DMX receiver
 
 public:
 
-  P44HelloWorld() :
-    counter(0)
+  P44HelloWorld()
+    #if TEST
+    : counter(0)
+    #endif
   {
   }
 
   virtual int main(int argc, char **argv)
   {
     if (!isTerminated()) {
-      SETLOGLEVEL(LOG_INFO);
+      SETLOGLEVEL(LOG_DEBUG);
       SETERRLEVEL(LOG_ERR, false);
       SETDELTATIME(false);
     } // if !terminated
@@ -74,6 +79,7 @@ public:
     ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
     // P44BTDMX receiver object
     dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
+    dmxReceiver->setAddressingInfo(0); // TODO: get from DIP switches!
     #if JSONAPI
     // socket
     apiServer = SocketCommPtr(new SocketComm(MainLoop::currentMainLoop()));
@@ -89,6 +95,30 @@ public:
     #endif // NUM_LEDS>0
     // second counter
     counterTicket.executeOnce(boost::bind(&P44HelloWorld::count, this, _1));
+    #else
+    // Real lights initialisation
+    P44DMXLightPtr light;
+    // - PWM
+    light = P44DMXLightPtr(new PWMLight(
+      new AnalogIo("pwmchip14.0", true, 0),
+      new AnalogIo("pwmchip12.1", true, 0),
+      new AnalogIo("pwmchip33.2", true, 0)
+    ));
+    dmxReceiver->addLight(light);
+    // - Ledchain
+    LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio23:150:0:150:0:1");
+    if (ledChainArrangement) {
+      PixelRect r = ledChainArrangement->totalCover();
+      ViewStackPtr rootView = ViewStackPtr(new ViewStack);
+      rootView->setFrame(r);
+      rootView->setBackgroundColor(black); // stack with black background is more efficient (and there's nothing below, anyway)
+      ledChainArrangement->setRootView(rootView);
+      ledChainArrangement->begin(true);
+      dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
+    }
+    else {
+      LOG(LOG_ERR,"cannot create LED chain arrangement");
+    }
     #endif // TEST
     // start scanning BLE advertisements
     BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));

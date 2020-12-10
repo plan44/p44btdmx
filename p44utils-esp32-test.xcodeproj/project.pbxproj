@@ -58,6 +58,8 @@
 		EDE91E8A257F93A900AFEAE8 /* pwm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF0BF223807FE00E3E7FC /* pwm.cpp */; };
 		EDE91E8E257FE59D00AFEAE8 /* esp_bt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E8C257FE59D00AFEAE8 /* esp_bt.cpp */; };
 		EDE91E992580E81300AFEAE8 /* p44btdmx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E972580E81300AFEAE8 /* p44btdmx.cpp */; };
+		EDE920E62582341000AFEAE8 /* p44lrglight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE920E42582341000AFEAE8 /* p44lrglight.cpp */; };
+		EDE920E72582341000AFEAE8 /* pwmlight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE920E52582341000AFEAE8 /* pwmlight.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -252,6 +254,10 @@
 		EDE91E96257FFFB200AFEAE8 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		EDE91E972580E81300AFEAE8 /* p44btdmx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44btdmx.cpp; sourceTree = "<group>"; };
 		EDE91E982580E81300AFEAE8 /* p44btdmx.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44btdmx.hpp; sourceTree = "<group>"; };
+		EDE920E22582341000AFEAE8 /* pwmlight.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pwmlight.hpp; sourceTree = "<group>"; };
+		EDE920E32582341000AFEAE8 /* p44lrglight.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44lrglight.hpp; sourceTree = "<group>"; };
+		EDE920E42582341000AFEAE8 /* p44lrglight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44lrglight.cpp; sourceTree = "<group>"; };
+		EDE920E52582341000AFEAE8 /* pwmlight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pwmlight.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -285,8 +291,8 @@
 		ED0AF080223807FE00E3E7FC /* components */ = {
 			isa = PBXGroup;
 			children = (
-				EDE91E45257ED6F200AFEAE8 /* p44lrgraphics */,
 				ED0AF081223807FE00E3E7FC /* p44utils */,
+				EDE91E45257ED6F200AFEAE8 /* p44lrgraphics */,
 			);
 			path = components;
 			sourceTree = "<group>";
@@ -430,6 +436,10 @@
 				ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */,
 				EDE91E972580E81300AFEAE8 /* p44btdmx.cpp */,
 				EDE91E982580E81300AFEAE8 /* p44btdmx.hpp */,
+				EDE920E42582341000AFEAE8 /* p44lrglight.cpp */,
+				EDE920E32582341000AFEAE8 /* p44lrglight.hpp */,
+				EDE920E52582341000AFEAE8 /* pwmlight.cpp */,
+				EDE920E22582341000AFEAE8 /* pwmlight.hpp */,
 				ED0AF15C22397D0800E3E7FC /* wifi_init.h */,
 				ED0AF15D22397D0800E3E7FC /* wifi_init.c */,
 				EDE91E8C257FE59D00AFEAE8 /* esp_bt.cpp */,
@@ -619,7 +629,9 @@
 				ED0AF15B223975CE00E3E7FC /* socketcomm.cpp in Sources */,
 				ED0AF14F223814A100E3E7FC /* fdcomm.cpp in Sources */,
 				EDE91E70257ED6F200AFEAE8 /* canvasview.cpp in Sources */,
+				EDE920E72582341000AFEAE8 /* pwmlight.cpp in Sources */,
 				EDE91E88257F939000AFEAE8 /* colorutils.cpp in Sources */,
+				EDE920E62582341000AFEAE8 /* p44lrglight.cpp in Sources */,
 				EDE91E6B257ED6F200AFEAE8 /* lightspotview.cpp in Sources */,
 				ED0AF1512238157C00E3E7FC /* application.cpp in Sources */,
 				ED0AF1422238089700E3E7FC /* p44obj.cpp in Sources */,

@@ -33,27 +33,40 @@ namespace p44 {
   typedef boost::intrusive_ptr<P44BTDMXreceiver> P44BTDMXreceiverPtr;
   class P44BTDMXsender;
   typedef boost::intrusive_ptr<P44BTDMXsender> P44BTDMXsenderPtr;
+  class P44DMXLight;
+  typedef boost::intrusive_ptr<P44DMXLight> P44DMXLightPtr;
 
   class P44BTDMXreceiver : public P44LoggingObj
   {
+    friend class P44DMXLight;
+
     static const uint16_t cLightBytes = 5;
+
+    typedef std::vector<P44DMXLightPtr> LightsVector;
 
     string mSystemKey;
     uint16_t mFirstLightNumber; ///< the first light ID we listen to (=DMX address / cLightBytes)
-    uint16_t mNumLights; ///< number of lights in this controllr (number of cLightBytes blocks)
+    LightsVector lights;
+
 
   public:
 
     P44BTDMXreceiver();
     virtual ~P44BTDMXreceiver();
 
+    /// @return prefix for log messages
+    virtual string logContextPrefix() P44_OVERRIDE { return "p44BTDMX Rx"; };
+
     /// set the system data obfuscation key
     void setSystemKey(const string aSystemKey);
 
     /// set the addressing info
-    /// @param aLightNumber the first light number handled by this receiver
-    /// @param aNumLights number of lights in this receiver
-    void setAddressingInfo(int aLightNumber, int aNumLights);
+    /// @param aFirstLightNumber the first light number handled by this receiver
+    void setAddressingInfo(int aFirstLightNumber);
+
+    /// add a light to this controller
+    /// @param aLight the light to add
+    void addLight(P44DMXLightPtr aLight);
 
     /// process manufacturer specific advertisement data (which might contain p44BTDMX data
     /// @param aAdvMfgData data bytes from a AD Struct of type "manufacturer specific data"
@@ -73,7 +86,43 @@ namespace p44 {
     uint8_t systemKeyByte(int aIndex);
 
   };
-  
+
+
+  class P44DMXLight : public P44LoggingObj
+  {
+    friend class P44BTDMXreceiver;
+
+    static const uint16_t cNumChannels = P44BTDMXreceiver::cLightBytes;
+
+  protected:
+
+    int mLocalLightNumber;
+    int mGlobalLightOffset;
+
+    typedef struct {
+      uint8_t pending;
+      uint8_t current;
+    } LightChannel;
+
+    LightChannel channels[cNumChannels];
+
+  public:
+    P44DMXLight();
+    virtual ~P44DMXLight();
+
+    /// @return prefix for log messages
+    virtual string logContextPrefix() P44_OVERRIDE { return string_format("Light #%d", mGlobalLightOffset+mLocalLightNumber); };
+
+    /// set single light channel
+    void setChannel(uint8_t aChannelIndex, uint8_t aValue);
+
+    /// apply channel values
+    /// @note base class just confirms apply by updating "current" field from "pending" in internal channel data
+    virtual void applyChannels();
+
+  };
+
+
 
   class P44BTDMXsender : public P44LoggingObj
   {
@@ -94,6 +143,9 @@ namespace p44 {
 
     P44BTDMXsender();
     virtual ~P44BTDMXsender();
+
+    /// @return prefix for log messages
+    virtual string logContextPrefix() P44_OVERRIDE { return "p44BTDMX Tx"; };
 
     /// set the system data obfuscation key
     void setSystemKey(const string aSystemKey);
@@ -129,9 +181,6 @@ namespace p44 {
     uint8_t systemKeyByte(int aIndex);
 
   };
-
-
-
 
 
 } // namespace p44
