@@ -35,6 +35,7 @@ using namespace p44;
 
 P44lrgLight::P44lrgLight(P44ViewPtr aRootView, PixelRect aFrame)
 {
+  FOCUSLOG("P44lrgLight created on mainloop@%p", &MainLoop::currentMainLoop());
   lightView = LightSpotViewPtr(new LightSpotView);
   lightView->setZOrder(mLocalLightNumber);
   lightView->setFrame(aFrame);
@@ -105,9 +106,9 @@ void P44lrgLight::applyChannels()
     lightView->setRelativeContentOrigin((double)channels[3].pending/255-0.5 ,0,true);
   }
   // request update
-  OLOG(LOG_INFO,"will request update");
+  FOCUSLOG("will request update, mainloop@%p", &MainLoop::currentMainLoop());
   lightView->requestUpdateIfNeeded();
-  OLOG(LOG_INFO,"did request update");
+  FOCUSLOG("did request update");
   // confirm apply
   inherited::applyChannels();
 }

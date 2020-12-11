@@ -66,7 +66,7 @@ public:
     if (!isTerminated()) {
       SETLOGLEVEL(LOG_DEBUG);
       SETERRLEVEL(LOG_ERR, false);
-      SETDELTATIME(false);
+      SETDELTATIME(true);
     } // if !terminated
     // app now ready to run (or cleanup when already terminated)
     return run();
@@ -119,7 +119,7 @@ public:
     else {
       LOG(LOG_ERR,"cannot create LED chain arrangement");
     }
-    #endif // TEST
+    #endif // !TEST
     // start scanning BLE advertisements
     BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));
   }
