@@ -82,6 +82,11 @@ namespace p44 {
 
     void gapCBHandler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param); /// semantically privat
 
+  private:
+
+    void deliverAdvertisement(ErrorPtr aError, const string aAdvData);
+    static void deliveryCallback(BTAdvertisementCB aCallback, ErrorPtr aError, const string aAdvData);
+
   };
 
 

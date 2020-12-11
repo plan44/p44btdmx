@@ -27,6 +27,7 @@
 #define FOCUSLOGLEVEL 7
 
 #include "esp_bt.hpp"
+#include "application.hpp"
 
 #include "nvs_flash.h"
 
@@ -101,9 +102,7 @@ void BtAdvertisementReceiver::gapCBHandler(esp_gap_ble_cb_event_t event, esp_ble
           // get data
           string advData;
           advData.assign((const char *)scan_result->scan_rst.ble_adv, (size_t)scan_result->scan_rst.adv_data_len);
-          if (mAdvertisementCB) {
-            mAdvertisementCB(ErrorPtr(), advData);
-          }
+          deliverAdvertisement(ErrorPtr(), advData);
           return; // done
         }
         default:
@@ -116,9 +115,30 @@ void BtAdvertisementReceiver::gapCBHandler(esp_gap_ble_cb_event_t event, esp_ble
   }
   if (Error::notOK(err) && mAdvertisementCB) {
     FOCUSLOG("GAP event handler Error: %s", err->text());
-    mAdvertisementCB(err, "");
+    deliverAdvertisement(err, "");
   }
 }
+
+
+void BtAdvertisementReceiver::deliverAdvertisement(ErrorPtr aError, const string aAdvData)
+{
+  if (mAdvertisementCB) {
+    FOCUSLOG("posting Advertisement handler execution from mainloop@%p", &MainLoop::currentMainLoop());
+    // make sure this executes on the main thread
+    Application::sharedApplication()->mainLoop().executeNowFromForeignTask(
+      boost::bind(&BtAdvertisementReceiver::deliveryCallback, mAdvertisementCB, aError, aAdvData)
+    );
+  }
+}
+
+
+void BtAdvertisementReceiver::deliveryCallback(BTAdvertisementCB aCallback, ErrorPtr aError, const string aAdvData)
+{
+  FOCUSLOG("calling Advertisement handler in mainloop@%p", &MainLoop::currentMainLoop());
+  aCallback(aError, aAdvData);
+}
+
+
 
 
 static esp_ble_scan_params_t ble_scan_params = {
