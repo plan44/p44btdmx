@@ -44,6 +44,7 @@ P44lrgLight::P44lrgLight(P44ViewPtr aRootView, PixelRect aFrame)
   lightView->setBackgroundColor(transparent);
   lightView->setRelativeContentOrigin(0,0,true); // center
   lightView->setRelativeExtent(1); // full frame
+  lightView->setLabel(string_format("P44lrgLight@%p",this));
   // add to root view
   aRootView->addSubView(lightView);
   OLOG(LOG_INFO, "view hierarchy: %s", aRootView->viewStatus()->json_c_str());
@@ -66,8 +67,8 @@ void P44lrgLight::applyChannels()
     // - convert to Pixel
     PixelColor col = hsbToPixel(
       (double)channels[0].pending/255*360,
-      (double)channels[0].pending/255,
-      (double)channels[0].pending/255,
+      (double)channels[1].pending/255,
+      (double)channels[2].pending/255,
       true // brightness as alpha, full RGB value
     );
     if (channels[4].pending!=channels[2].current) {

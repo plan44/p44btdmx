@@ -111,7 +111,6 @@
 		ED0AF0A2223807FE00E3E7FC /* socketcomm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = socketcomm.hpp; sourceTree = "<group>"; };
 		ED0AF0AF223807FE00E3E7FC /* gpio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gpio.cpp; sourceTree = "<group>"; };
 		ED0AF0B0223807FE00E3E7FC /* valueunits.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = valueunits.hpp; sourceTree = "<group>"; };
-		ED0AF0B1223807FE00E3E7FC /* component.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = component.mk; sourceTree = "<group>"; };
 		ED0AF0B2223807FE00E3E7FC /* p44utils_common.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44utils_common.hpp; sourceTree = "<group>"; };
 		ED0AF0B3223807FE00E3E7FC /* jsonrpccomm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsonrpccomm.cpp; sourceTree = "<group>"; };
 		ED0AF0B4223807FE00E3E7FC /* digitalio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = digitalio.cpp; sourceTree = "<group>"; };
@@ -159,7 +158,6 @@
 		ED0AF104223807FF00E3E7FC /* jsonwebclient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsonwebclient.cpp; sourceTree = "<group>"; };
 		ED0AF105223807FF00E3E7FC /* sqlite3persistence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sqlite3persistence.cpp; sourceTree = "<group>"; };
 		ED0AF106223807FF00E3E7FC /* igmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = igmp.cpp; sourceTree = "<group>"; };
-		ED0AF1482238092800E3E7FC /* component.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = component.mk; sourceTree = "<group>"; };
 		ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44utils_main.cpp; sourceTree = "<group>"; };
 		ED0AF1542239592000E3E7FC /* esp_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = esp_main.c; sourceTree = "<group>"; };
 		ED0AF158223969B700E3E7FC /* esp32_ws281x.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = esp32_ws281x.c; sourceTree = "<group>"; };
@@ -226,7 +224,6 @@
 		EDE91E4F257ED6F200AFEAE8 /* canvasview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = canvasview.hpp; sourceTree = "<group>"; };
 		EDE91E50257ED6F200AFEAE8 /* Kconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Kconfig; sourceTree = "<group>"; };
 		EDE91E51257ED6F200AFEAE8 /* viewfactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = viewfactory.hpp; sourceTree = "<group>"; };
-		EDE91E52257ED6F200AFEAE8 /* component.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = component.mk; sourceTree = "<group>"; };
 		EDE91E53257ED6F200AFEAE8 /* viewscroller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = viewscroller.cpp; sourceTree = "<group>"; };
 		EDE91E54257ED6F200AFEAE8 /* p44view.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44view.hpp; sourceTree = "<group>"; };
 		EDE91E55257ED6F200AFEAE8 /* textview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = textview.hpp; sourceTree = "<group>"; };
@@ -247,7 +244,6 @@
 		EDE91E67257ED6F200AFEAE8 /* torchview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = torchview.cpp; sourceTree = "<group>"; };
 		EDE91E68257ED6F200AFEAE8 /* coloreffectview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = coloreffectview.hpp; sourceTree = "<group>"; };
 		EDE91E69257ED6F200AFEAE8 /* lightspotview.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = lightspotview.hpp; sourceTree = "<group>"; };
-		EDE91E7B257ED7C500AFEAE8 /* component.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = component.mk; sourceTree = "<group>"; };
 		EDE91E7D257F90E100AFEAE8 /* p44lrg_config.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44lrg_config.hpp; sourceTree = "<group>"; };
 		EDE91E8C257FE59D00AFEAE8 /* esp_bt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = esp_bt.cpp; sourceTree = "<group>"; };
 		EDE91E8D257FE59D00AFEAE8 /* esp_bt.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = esp_bt.hpp; sourceTree = "<group>"; };
@@ -303,7 +299,6 @@
 				ED0AF0D3223807FF00E3E7FC /* thirdparty */,
 				EDE91E38257E8AFE00AFEAE8 /* CMakeLists.txt */,
 				ED0AF0A0223807FE00E3E7FC /* Kconfig */,
-				ED0AF0B1223807FE00E3E7FC /* component.mk */,
 				EDE91E39257E8AFE00AFEAE8 /* dcmotor.cpp */,
 				EDE91E34257E8AFD00AFEAE8 /* dcmotor.hpp */,
 				EDE91E3C257E8AFE00AFEAE8 /* extutils.cpp */,
@@ -430,7 +425,6 @@
 			isa = PBXGroup;
 			children = (
 				EDE91E96257FFFB200AFEAE8 /* CMakeLists.txt */,
-				ED0AF1482238092800E3E7FC /* component.mk */,
 				EDE91E7D257F90E100AFEAE8 /* p44lrg_config.hpp */,
 				EDE91E31257E623C00AFEAE8 /* p44utils_config.hpp */,
 				ED0AF1522238199B00E3E7FC /* p44utils_main.cpp */,
@@ -504,13 +498,11 @@
 			isa = PBXGroup;
 			children = (
 				EDE91E49257ED6F200AFEAE8 /* CMakeLists.txt */,
-				EDE91E7B257ED7C500AFEAE8 /* component.mk */,
 				EDE91E50257ED6F200AFEAE8 /* Kconfig */,
 				EDE91E5B257ED6F200AFEAE8 /* canvasview.cpp */,
 				EDE91E4F257ED6F200AFEAE8 /* canvasview.hpp */,
 				EDE91E4B257ED6F200AFEAE8 /* coloreffectview.cpp */,
 				EDE91E68257ED6F200AFEAE8 /* coloreffectview.hpp */,
-				EDE91E52257ED6F200AFEAE8 /* component.mk */,
 				EDE91E4E257ED6F200AFEAE8 /* epxview.cpp */,
 				EDE91E59257ED6F200AFEAE8 /* epxview.hpp */,
 				EDE91E56257ED6F200AFEAE8 /* imageview.cpp */,

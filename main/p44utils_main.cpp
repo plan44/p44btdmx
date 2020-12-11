@@ -106,6 +106,7 @@ public:
     ));
     dmxReceiver->addLight(light);
     // - Ledchain
+    SETLOGLEVEL(LOG_DEBUG);
     LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio23:150:0:150:0:1");
     if (ledChainArrangement) {
       PixelRect r = ledChainArrangement->totalCover();
@@ -115,10 +116,12 @@ public:
       ledChainArrangement->setRootView(rootView);
       ledChainArrangement->begin(true);
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
+      LOG(LOG_INFO, "lrg status: %s", rootView->viewStatus()->json_c_str());
     }
     else {
       LOG(LOG_ERR,"cannot create LED chain arrangement");
     }
+    SETLOGLEVEL(LOG_INFO);
     #endif // !TEST
     // start scanning BLE advertisements
     BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));
