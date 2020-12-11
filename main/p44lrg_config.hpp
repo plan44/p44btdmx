@@ -28,7 +28,7 @@
   #ifdef CONFIG_P44LRGRAPHICS_ENABLE_VIEWCONFIG
     #define ENABLE_VIEWCONFIG CONFIG_P44LRGRAPHICS_ENABLE_VIEWCONFIG
   #else
-    #define ENABLE_VIEWCONFIG 0 // not by default because it pulls in JsonObject and Application
+    #define ENABLE_VIEWCONFIG 1 // not by default because it pulls in JsonObject and Application
   #endif
 #endif
 

@@ -46,6 +46,7 @@ P44lrgLight::P44lrgLight(P44ViewPtr aRootView, PixelRect aFrame)
   lightView->setRelativeExtent(1); // full frame
   // add to root view
   aRootView->addSubView(lightView);
+  OLOG(LOG_INFO, "view hierarchy: %s", aRootView->viewStatus()->json_c_str());
 }
 
 P44lrgLight::~P44lrgLight()
