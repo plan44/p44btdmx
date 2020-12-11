@@ -64,7 +64,7 @@ public:
   virtual int main(int argc, char **argv)
   {
     if (!isTerminated()) {
-      SETLOGLEVEL(LOG_DEBUG);
+      SETLOGLEVEL(LOG_INFO);
       SETERRLEVEL(LOG_ERR, false);
       SETDELTATIME(true);
     } // if !terminated
