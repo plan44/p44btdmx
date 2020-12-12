@@ -1,8 +1,8 @@
-[submodule "components/p44utils"]
-	path = components/p44utils
+[submodule "p44btdmx_esp32/components/p44utils"]
+	path = p44btdmx_esp32/components/p44utils
 	url = ../p44utils.git
 	branch = luz
-[submodule "components/p44lrgraphics"]
-	path = components/p44lrgraphics
+[submodule "p44btdmx_esp32/components/p44lrgraphics"]
+	path = p44btdmx_esp32/components/p44lrgraphics
 	url = ../p44lrgraphics.git
 	branch = master

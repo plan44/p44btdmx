@@ -1,6 +1,6 @@
 # ESP_PLATFORM specifics
-build/
-sdkconfig.old
+p44btdmx_esp32/build/
+p44btdmx_esp32/sdkconfig.old
 
 # XCode specifics
 *.xcodeproj/project.xcworkspace/xcuserdata/*.xcuserdatad/UserInterfaceState.xcuserstate
