@@ -75,7 +75,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		ED0AF076223807CC00E3E7FC /* p44utils-esp32-test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "p44utils-esp32-test"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED0AF076223807CC00E3E7FC /* p44btdmx_controller */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = p44btdmx_controller; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED0AF082223807FE00E3E7FC /* iopin.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = iopin.hpp; sourceTree = "<group>"; };
 		ED0AF083223807FE00E3E7FC /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = logger.hpp; sourceTree = "<group>"; };
 		ED0AF084223807FE00E3E7FC /* application.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = application.hpp; sourceTree = "<group>"; };
@@ -279,7 +279,7 @@
 		ED0AF077223807CC00E3E7FC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				ED0AF076223807CC00E3E7FC /* p44utils-esp32-test */,
+				ED0AF076223807CC00E3E7FC /* p44btdmx_controller */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -535,9 +535,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		ED0AF075223807CC00E3E7FC /* p44utils-esp32-test */ = {
+		ED0AF075223807CC00E3E7FC /* p44btdmx_controller */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ED0AF07D223807CC00E3E7FC /* Build configuration list for PBXNativeTarget "p44utils-esp32-test" */;
+			buildConfigurationList = ED0AF07D223807CC00E3E7FC /* Build configuration list for PBXNativeTarget "p44btdmx_controller" */;
 			buildPhases = (
 				ED0AF072223807CC00E3E7FC /* Sources */,
 				ED0AF073223807CC00E3E7FC /* Frameworks */,
@@ -547,9 +547,9 @@
 			);
 			dependencies = (
 			);
-			name = "p44utils-esp32-test";
+			name = p44btdmx_controller;
 			productName = "p44utils-esp32-test";
-			productReference = ED0AF076223807CC00E3E7FC /* p44utils-esp32-test */;
+			productReference = ED0AF076223807CC00E3E7FC /* p44btdmx_controller */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -566,7 +566,7 @@
 					};
 				};
 			};
-			buildConfigurationList = ED0AF071223807CC00E3E7FC /* Build configuration list for PBXProject "p44utils-esp32-test" */;
+			buildConfigurationList = ED0AF071223807CC00E3E7FC /* Build configuration list for PBXProject "p44btdmx_controller" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -578,7 +578,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				ED0AF075223807CC00E3E7FC /* p44utils-esp32-test */,
+				ED0AF075223807CC00E3E7FC /* p44btdmx_controller */,
 			);
 		};
 /* End PBXProject section */
@@ -792,7 +792,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		ED0AF071223807CC00E3E7FC /* Build configuration list for PBXProject "p44utils-esp32-test" */ = {
+		ED0AF071223807CC00E3E7FC /* Build configuration list for PBXProject "p44btdmx_controller" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ED0AF07B223807CC00E3E7FC /* Debug */,
@@ -801,7 +801,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ED0AF07D223807CC00E3E7FC /* Build configuration list for PBXNativeTarget "p44utils-esp32-test" */ = {
+		ED0AF07D223807CC00E3E7FC /* Build configuration list for PBXNativeTarget "p44btdmx_controller" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ED0AF07E223807CC00E3E7FC /* Debug */,

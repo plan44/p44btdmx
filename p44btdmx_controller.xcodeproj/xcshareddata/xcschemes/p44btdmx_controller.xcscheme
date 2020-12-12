@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ED0AF075223807CC00E3E7FC"
-               BuildableName = "p44utils-esp32-test"
-               BlueprintName = "p44utils-esp32-test"
-               ReferencedContainer = "container:p44utils-esp32-test.xcodeproj">
+               BuildableName = "p44btdmx_controller"
+               BlueprintName = "p44btdmx_controller"
+               ReferencedContainer = "container:p44btdmx_controller.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ED0AF075223807CC00E3E7FC"
-            BuildableName = "p44utils-esp32-test"
-            BlueprintName = "p44utils-esp32-test"
-            ReferencedContainer = "container:p44utils-esp32-test.xcodeproj">
+            BuildableName = "p44btdmx_controller"
+            BlueprintName = "p44btdmx_controller"
+            ReferencedContainer = "container:p44btdmx_controller.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ED0AF075223807CC00E3E7FC"
-            BuildableName = "p44utils-esp32-test"
-            BlueprintName = "p44utils-esp32-test"
-            ReferencedContainer = "container:p44utils-esp32-test.xcodeproj">
+            BuildableName = "p44btdmx_controller"
+            BlueprintName = "p44btdmx_controller"
+            ReferencedContainer = "container:p44btdmx_controller.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
