@@ -333,6 +333,28 @@ string P44BTDMXsender::encodeP44BTDMXpayload(const string aPlainText)
 }
 
 
+uint8_t P44BTDMXsender::getChannel(uint16_t aDMXChannel)
+{
+  if (aDMXChannel>=cUniverseSize) return 0;
+  return mUniverse[aDMXChannel].pending;
+}
+
+
+void P44BTDMXsender::setChannel(uint16_t aDMXChannel, uint8_t aValue)
+{
+  if (aDMXChannel>=cUniverseSize) return;
+  mUniverse[aDMXChannel].pending = aValue;
+}
+
+
+void P44BTDMXsender::setChannels(uint16_t aFromChannel, uint16_t aNumChannels, const uint8_t* aDMXChannelData)
+{
+  for (int i=0; i<aNumChannels; i++) {
+    setChannel(aFromChannel+i, aDMXChannelData[i]);
+  }
+}
+
+
 // DMX-to-BT update strategy
 // - for each DMX channel in the universe (512 channels), we have
 //   - pending value (as recently received from DMX)
@@ -348,20 +370,6 @@ string P44BTDMXsender::encodeP44BTDMXpayload(const string aPlainText)
 //   - if p44DMX data packet still has room, repeat with finding remaining max age
 //   - increment all ages <255.
 //   - send the p44DMX packet
-
-void P44BTDMXsender::setChannel(uint16_t aDMXChannel, uint8_t aValue)
-{
-  if (aDMXChannel>=cUniverseSize) return;
-  mUniverse[aDMXChannel].pending = aValue;
-}
-
-
-void P44BTDMXsender::setChannels(uint16_t aFromChannel, uint16_t aNumChannels, const uint8_t* aDMXChannelData)
-{
-  for (int i=0; i<aNumChannels; i++) {
-    setChannel(aFromChannel+i, aDMXChannelData[i]);
-  }
-}
 
 
 string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)

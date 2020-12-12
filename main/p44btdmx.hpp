@@ -155,6 +155,11 @@ namespace p44 {
     /// encode plaintext (e.g. p44DMX command) string as p44BTDMX payload
     string encodeP44BTDMXpayload(const string aPlainText);
 
+    /// get a DMX channel value
+    /// @param aDMXChannel the DMX channel index (0..511)
+    /// @return the current value of the channel
+    uint8_t getChannel(uint16_t aDMXChannel);
+
     /// set a DMX channel value
     /// @param aDMXChannel the DMX channel index (0..511)
     /// @param aValue the new value
