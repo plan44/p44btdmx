@@ -127,8 +127,9 @@ namespace p44 {
   class P44BTDMXsender : public P44LoggingObj
   {
     string mSystemKey;
-    static const int cUniverseSize = 512;
     static const uint16_t cLightBytes = 5;
+    static const uint16_t cNumLights = (255-2)/3; // limited not by DMX channels, but addr/command byte (3 cmds per light)
+    static const int cUniverseSize = cLightBytes*cNumLights; // important to be NOT larger than actually monitored lights
 
     typedef struct {
       uint8_t pending;
@@ -143,6 +144,9 @@ namespace p44 {
 
     P44BTDMXsender();
     virtual ~P44BTDMXsender();
+
+    /// reset sender to all channels unchanged
+    void reset();
 
     /// @return prefix for log messages
     virtual string logContextPrefix() P44_OVERRIDE { return "p44BTDMX Tx"; };

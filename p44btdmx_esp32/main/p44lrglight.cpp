@@ -24,7 +24,7 @@
 #define ALWAYS_DEBUG 0
 // - set FOCUSLOGLEVEL to non-zero log level (usually, 5,6, or 7==LOG_DEBUG) to get focus (extensive logging) for this file
 //   Note: must be before including "logger.hpp" (or anything that includes "logger.hpp")
-#define FOCUSLOGLEVEL 0
+#define FOCUSLOGLEVEL 7
 
 #include "p44lrglight.hpp"
 
@@ -71,26 +71,38 @@ void P44lrgLight::applyChannels()
       (double)channels[2].pending/255,
       true // brightness as alpha, full RGB value
     );
-    if (channels[4].pending!=channels[2].current) {
+    if (channels[4].pending!=channels[4].current) {
       // mode change, including color
-      switch(channels[4].pending) {
+      uint8_t mode = (channels[4].pending>>4) & 0xF;
+      uint8_t param = channels[4].pending & 0xF;
+      switch(mode) {
         default:
         case 0: {
-          // just fixed light with hard edges
+          // full size light with hard edges
           lightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
-          lightView->setRelativeExtent(1); // full frame
+          lightView->setRelativeExtent(2);
+          lightView->setWrapMode(P44View::clipXY);
           break;
         }
         case 1: {
-          // soft edged small
-          lightView->setColoringParameters(col, -1, gradient_curve_cos, 0, gradient_none, 0, gradient_none, false);
-          lightView->setRelativeExtent(0.5); // half frame
+          // sizable light with hard edges
+          lightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
+          lightView->setRelativeExtent((double)param/16);
+          lightView->setWrapMode(P44View::clipXY);
           break;
         }
         case 2: {
-          // soft edged large
+          // sizable soft edged
           lightView->setColoringParameters(col, -1, gradient_curve_cos, 0, gradient_none, 0, gradient_none, false);
+          lightView->setRelativeExtent((double)param/16);
+          lightView->setWrapMode(P44View::clipXY);
+          break;
+        }
+        case 3: {
+          // tunable color gradient
+          lightView->setColoringParameters(col, 0, gradient_none, (double)param/8-1, gradient_curve_lin+gradient_repeat_oscillating, 0, gradient_none, false);
           lightView->setRelativeExtent(1); // full frame
+          lightView->setWrapMode(P44View::clipXY);
           break;
         }
       }
@@ -105,7 +117,7 @@ void P44lrgLight::applyChannels()
     (channels[3].pending!=channels[3].current) // position
   ) {
     OLOG(LOG_INFO,"Position change");
-    lightView->setRelativeContentOrigin((double)channels[3].pending/255-0.5 ,0,true);
+    lightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
   }
   // request update
   FOCUSLOG("will request update, mainloop@%p", &MainLoop::currentMainLoop());

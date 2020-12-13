@@ -64,7 +64,7 @@ public:
   virtual int main(int argc, char **argv)
   {
     if (!isTerminated()) {
-      SETLOGLEVEL(LOG_INFO);
+      SETLOGLEVEL(LOG_NOTICE);
       SETERRLEVEL(LOG_ERR, false);
       SETDELTATIME(true);
     } // if !terminated
@@ -106,7 +106,6 @@ public:
     ));
     dmxReceiver->addLight(light);
     // - Ledchain
-    SETLOGLEVEL(LOG_DEBUG);
     LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio23:150:0:150:0:1");
     if (ledChainArrangement) {
       PixelRect r = ledChainArrangement->totalCover();
@@ -121,7 +120,6 @@ public:
     else {
       LOG(LOG_ERR,"cannot create LED chain arrangement");
     }
-    SETLOGLEVEL(LOG_INFO);
     #endif // !TEST
     // start scanning BLE advertisements
     BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));

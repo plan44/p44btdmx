@@ -185,7 +185,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
       continue;
     }
     int lightIndex = addrCmd / 3;
-    OLOG(LOG_INFO, "Command for Global Light #%d (DMX: %d)", lightIndex, lightIndex*cLightBytes);
+    FOCUSLOG("Command for Global Light #%d (DMX: %d)", lightIndex, lightIndex*cLightBytes);
     uint8_t cmd = addrCmd - 3*lightIndex; // modulo 3
     lightIndex -= mFirstLightNumber;
     if (lightIndex>=lights.size()) lightIndex = -1; // not one of our lights
@@ -194,6 +194,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
       case 0: {
         uint8_t b = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
+          FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, b);
           P44DMXLightPtr light = lights[lightIndex];
           light->setChannel(2,b);
           light->applyChannels();
@@ -206,6 +207,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         uint8_t s = aP44BTDMXCmds[i++];
         uint8_t b = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
+          FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X %02X %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, h, s, b);
           P44DMXLightPtr light = lights[lightIndex];
           light->setChannel(0,h);
           light->setChannel(1,s);
@@ -219,6 +221,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         uint8_t pos = aP44BTDMXCmds[i++];
         uint8_t mode = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
+          FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, pos, mode);
           P44DMXLightPtr light = lights[lightIndex];
           light->setChannel(3,pos);
           light->setChannel(4,mode);
@@ -269,7 +272,6 @@ P44DMXLight::~P44DMXLight()
 }
 
 
-
 /// set single light channel
 void P44DMXLight::setChannel(uint8_t aChannelIndex, uint8_t aValue)
 {
@@ -300,7 +302,7 @@ P44BTDMXsender::P44BTDMXsender() :
   for (int i=0; i<cUniverseSize; i++) {
     mUniverse[i].pending = 0;
     mUniverse[i].current = 0;
-    mUniverse[i].age = 255; // force all channels to be sent once initially
+    mUniverse[i].age = 128; // force all channels to be sent once initially, but with less priority than new changes
   }
 }
 
@@ -308,6 +310,21 @@ P44BTDMXsender::P44BTDMXsender() :
 P44BTDMXsender::~P44BTDMXsender()
 {
 }
+
+void P44BTDMXsender::setSystemKey(const string aSystemKey)
+{
+  mSystemKey = aSystemKey;
+}
+
+
+void P44BTDMXsender::reset()
+{
+  for (int i=0; i<cUniverseSize; i++) {
+    mUniverse[i].current = mUniverse[i].pending; // treat as if updated
+    mUniverse[i].age = 128; // force all channels to be sent once initially, but with less priority than new changes
+  }
+}
+
 
 
 uint8_t P44BTDMXsender::systemKeyByte(int aIndex)
@@ -378,22 +395,27 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
   // detect changes
   for (int i=0; i<cUniverseSize; i++) {
     if (mUniverse[i].pending != mUniverse[i].current) {
+      LOG(LOG_NOTICE, "channel #%d changes from %d to %d", i, mUniverse[i].current, mUniverse[i].pending);
       mUniverse[i].age = 255;
       mUniverse[i].current = mUniverse[i].pending;
     }
   }
   int room = aMaxBytes;
+  int lastMaxAge = 9999;
   while (room>=2) {
     // find highest remaining age
-    uint8_t maxAge = 0;
+    int maxAge = 0;
     for (int i=0; i<cUniverseSize; i++) {
-      if (mUniverse[i].age>maxAge) maxAge = mUniverse[i].age;
+      if (mUniverse[i].age>maxAge) {
+        maxAge = mUniverse[i].age;
+      }
     }
-    if (maxAge<1) break; // no more aged values, all sent
+    if (maxAge>=lastMaxAge) break; // no more aged values smaller than those already seen in last iteration
+    lastMaxAge = maxAge;
     uint8_t doneAge = maxAge>255-mInitialRepeatCount ? maxAge-2 : 0;
     // generate updates for oldest (=most urgent) lights
     // Note: check light by light
-    for (int lidx=0; lidx<cUniverseSize/cLightBytes; lidx++) {
+    for (int lidx=0; lidx<cNumLights; lidx++) {
       int loffs = lidx*cLightBytes;
       // light layout: HSB: 5 bytes
       // - 0: hue
@@ -447,7 +469,7 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
     if (mUniverse[i].age<255) mUniverse[i].age++;
   }
   // return the commands
-  OLOG(LOG_NOTICE, "p44DMX delta cmds: %s", binaryToHexString(cmds, ' ').c_str());
+  OLOG(LOG_INFO, "p44DMX delta cmds: %s", binaryToHexString(cmds, ' ').c_str());
   return cmds;
 }
 
@@ -455,6 +477,7 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
 string P44BTDMXsender::generateP44BTDMXpayload(int aMaxBytes, int aMinBytes)
 {
   string cmds = generateP44DMXcmds(aMaxBytes-2);
+  if (cmds.empty()) return ""; // nothing at all
   int fill = aMaxBytes-2-cmds.size();
   if (fill>0) {
     cmds.append(fill,0xFF); // fill up with extended/NOP commands

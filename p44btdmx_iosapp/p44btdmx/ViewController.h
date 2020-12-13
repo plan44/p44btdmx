@@ -19,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UISlider *positionSlider;
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *modeSelect;
+@property (weak, nonatomic) IBOutlet UISlider *modeParamSlider;
 
 - (IBAction)lightNo10sChanged:(id)sender;
 - (IBAction)lightNo1sChanged:(id)sender;
@@ -30,6 +31,8 @@
 - (IBAction)positionChanged:(id)sender;
 
 - (IBAction)modeChanged:(id)sender;
+
+- (IBAction)stopBroadcastTapped:(id)sender;
 
 @end
 

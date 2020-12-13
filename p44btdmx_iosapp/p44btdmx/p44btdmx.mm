@@ -23,10 +23,25 @@ using namespace p44;
 - (id)init
 {
   if ((self = [super init])) {
+    SETLOGLEVEL(LOG_NOTICE);
     dmxSender = P44BTDMXsenderPtr(new P44BTDMXsender);
     dmxSender->setInitialRepeatCount(0); // no repetitions
   }
   return self;
+}
+
+
+- (void)setSystemKey:(NSString*)aSystemKey
+{
+  string k;
+  k.assign([aSystemKey cStringUsingEncoding:NSUTF8StringEncoding]);
+  dmxSender->setSystemKey(k);
+}
+
+
+- (void)reset
+{
+  dmxSender->reset();
 }
 
 
@@ -43,7 +58,7 @@ using namespace p44;
 
 
 
-- (NSData *)advertisementData
+- (NSData *)iBeaconAdvertisementData
 {
   std::string data = dmxSender->generateP44BTDMXpayload(21);
   return [NSData dataWithBytes:data.c_str() length:data.size()];

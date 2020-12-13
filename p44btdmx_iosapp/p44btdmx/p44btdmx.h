@@ -15,9 +15,11 @@
 }
 
 - (id)init;
+- (void)setSystemKey:(NSString*)aSystemKey;
+- (void)reset;
 - (void)setChannel:(int)aChannel toValue:(UInt8)aValue;
 - (UInt8)getChannel:(int)aChannel;
-- (NSData *)advertisementData;
+- (NSData *)iBeaconAdvertisementData;
 
 @end // NSObject
 
