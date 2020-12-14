@@ -6,6 +6,7 @@
 //
 
 #import "ViewController.h"
+#import "SettingsViewController.h"
 #import "p44btdmx.h"
 #import "AppDelegate.h"
 
@@ -125,6 +126,13 @@
   [[AppDelegate sharedAppDelegate].p44BTDMXManager stopBroadcast];
 }
 
+
+- (IBAction)endSettings:(UIStoryboardSegue*)unwindSegue
+{
+  SettingsViewController *settings = (SettingsViewController *)[unwindSegue sourceViewController];
+  [[NSUserDefaults standardUserDefaults] setValue:settings.systemKeyTextfield.text forKey:@"p44BtDMXsystemKey"];
+  [[AppDelegate sharedAppDelegate] readSystemKey];
+}
 
 
 

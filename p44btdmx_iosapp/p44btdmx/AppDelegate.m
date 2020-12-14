@@ -22,8 +22,14 @@
 - (id)init
 {
   if ((self = [super init])) {
+    // init defaults
+    [[NSUserDefaults standardUserDefaults] registerDefaults: @{
+      @"p44BtDMXsystemKey": @""
+    }];
+    // init BT
     mCentralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     mPeripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+    // init P44BTDMX
     mP44BTDMX = [[P44BTDMX alloc] init];
   }
   return self;
@@ -141,9 +147,18 @@
 }
 
 
+- (void)readSystemKey
+{
+  [mP44BTDMXManager.p44BTDMX setSystemKey:[[NSUserDefaults standardUserDefaults] objectForKey:@"p44BtDMXsystemKey"]];
+}
+
+
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   mP44BTDMXManager = [[P44BTDMXManager alloc] init];
+  [self readSystemKey];
+  // set system key from userdefaults
   return YES;
 }
 

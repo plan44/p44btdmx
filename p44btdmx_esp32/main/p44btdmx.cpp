@@ -313,7 +313,12 @@ P44BTDMXsender::~P44BTDMXsender()
 
 void P44BTDMXsender::setSystemKey(const string aSystemKey)
 {
-  mSystemKey = aSystemKey;
+  if (!aSystemKey.empty()) {
+    mSystemKey = aSystemKey;
+  }
+  else {
+    mSystemKey = DEFAULT_P44BTDMX_SYSTEM_KEY;
+  }
 }
 
 

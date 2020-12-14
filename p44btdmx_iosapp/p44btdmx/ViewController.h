@@ -34,5 +34,8 @@
 
 - (IBAction)stopBroadcastTapped:(id)sender;
 
+
+- (IBAction)endSettings:(UIStoryboardSegue*)unwindSegue;
+
 @end
 

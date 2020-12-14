@@ -14,8 +14,8 @@
             filePath = "../p44btdmx_esp32/main/p44btdmx.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "414"
-            endingLineNumber = "414"
+            startingLineNumber = "419"
+            endingLineNumber = "419"
             landmarkName = "P44BTDMXsender::generateP44DMXcmds(aMaxBytes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "../p44btdmx_esp32/main/p44btdmx.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "435"
-            endingLineNumber = "435"
+            startingLineNumber = "440"
+            endingLineNumber = "440"
             landmarkName = "P44BTDMXsender::generateP44DMXcmds(aMaxBytes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "../p44btdmx_esp32/main/p44btdmx.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "447"
-            endingLineNumber = "447"
+            startingLineNumber = "452"
+            endingLineNumber = "452"
             landmarkName = "P44BTDMXsender::generateP44DMXcmds(aMaxBytes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "../p44btdmx_esp32/main/p44btdmx.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "456"
-            endingLineNumber = "456"
+            startingLineNumber = "461"
+            endingLineNumber = "461"
             landmarkName = "P44BTDMXsender::generateP44DMXcmds(aMaxBytes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "../p44btdmx_esp32/main/p44btdmx.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "468"
-            endingLineNumber = "468"
+            startingLineNumber = "473"
+            endingLineNumber = "473"
             landmarkName = "P44BTDMXsender::generateP44DMXcmds(aMaxBytes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,10 +94,10 @@
             filePath = "../p44btdmx_esp32/main/p44btdmx.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "362"
-            endingLineNumber = "362"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "367"
+            endingLineNumber = "367"
+            landmarkName = "P44BTDMXsender::setChannel(aDMXChannel, aValue)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

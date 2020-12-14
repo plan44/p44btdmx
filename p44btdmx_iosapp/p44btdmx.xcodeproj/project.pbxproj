@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED2F6E6925881ACC0094D892 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2F6E6825881ACC0094D892 /* SettingsViewController.m */; };
 		EDCED47525855F5C003639C5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EDCED47425855F5C003639C5 /* AppDelegate.m */; };
 		EDCED47825855F5C003639C5 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EDCED47725855F5C003639C5 /* SceneDelegate.m */; };
 		EDCED47B25855F5C003639C5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EDCED47A25855F5C003639C5 /* ViewController.m */; };
@@ -23,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		ED2F6E6725881ACC0094D892 /* SettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		ED2F6E6825881ACC0094D892 /* SettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		EDCED47025855F5C003639C5 /* p44btdmx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = p44btdmx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EDCED47325855F5C003639C5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		EDCED47425855F5C003639C5 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -92,6 +95,8 @@
 				EDCED47725855F5C003639C5 /* SceneDelegate.m */,
 				EDCED47925855F5C003639C5 /* ViewController.h */,
 				EDCED47A25855F5C003639C5 /* ViewController.m */,
+				ED2F6E6725881ACC0094D892 /* SettingsViewController.h */,
+				ED2F6E6825881ACC0094D892 /* SettingsViewController.m */,
 				EDCED47C25855F5C003639C5 /* Main.storyboard */,
 				EDCED47F25855F5E003639C5 /* Assets.xcassets */,
 				EDCED48125855F5E003639C5 /* LaunchScreen.storyboard */,
@@ -207,6 +212,7 @@
 				EDCED48625855F5E003639C5 /* main.m in Sources */,
 				EDCED47825855F5C003639C5 /* SceneDelegate.m in Sources */,
 				EDCED60925857F2C003639C5 /* logger.cpp in Sources */,
+				ED2F6E6925881ACC0094D892 /* SettingsViewController.m in Sources */,
 				EDCED49925857F05003639C5 /* p44btdmx.cpp in Sources */,
 				EDCED49325857E40003639C5 /* p44btdmx.mm in Sources */,
 			);
