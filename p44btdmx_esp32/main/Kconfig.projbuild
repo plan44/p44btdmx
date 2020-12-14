@@ -1,4 +1,20 @@
-menu "p44utils-test Configuration"
+menu "P44BTDMX-Controller Configuration"
+
+
+config P44_WIFI_SUPPORT
+    bool "Enable Wifi in p44utils based app"
+    help
+        This enables using Wifi at all in p44utils based app
+
+config P44BTDMX_SYSTEMKEY
+    string "P44BTDMX system key (>=32 bytes hex)"
+    help
+        Encryption/Obfuscation key for P44BTDMX protocol
+
+config P44BTDMX_PWMLIGHT
+    bool "Enables PWM light as light #0"
+    help
+        This enables PWM R,G,B light as light #0
 
 choice ESP_WIFI_MODE
     prompt "AP or STA"

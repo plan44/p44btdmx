@@ -9,6 +9,8 @@
 #ifndef wifi_init_h
 #define wifi_init_h
 
+#include "sdkconfig.h"
+
 extern void wifi_init();
 
 #endif /* wifi_init_h */

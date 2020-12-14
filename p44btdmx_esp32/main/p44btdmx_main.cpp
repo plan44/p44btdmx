@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 plan44.ch / Lukas Zeller, Zurich, Switzerland
+//  Copyright (c) 2020 plan44.ch / Lukas Zeller, Zurich, Switzerland
 //
 //  Author: Lukas Zeller <luz@plan44.ch>
 //
@@ -23,27 +23,21 @@
 #endif
 
 
-// TODO: remove this test stuff
-#define JSONAPI 0 // JSON socket API
-#define TEST 0 // tests (inlcuding direct LED)
-#define NUM_LEDS 10 // number of LEDs for direct test, 0=none
+#if CONFIG_P44_WIFI_SUPPORT
+  #define JSONAPI 1 // JSON socket API
+#else
+  #define JSONAPI 0
+#endif
 
 
 using namespace p44;
 
 static size_t memAtStart = 0;
 
-class P44HelloWorld : public Application
+class P44BTDMXController : public Application
 {
   typedef Application inherited;
 
-  #if TEST
-  MLTicket counterTicket;
-  int counter;
-  #if NUM_LEDS
-  LEDChainCommPtr ledChain;
-  #endif
-  #endif
   #if JSONAPI
   SocketCommPtr apiServer;
   #endif
@@ -54,10 +48,7 @@ class P44HelloWorld : public Application
 
 public:
 
-  P44HelloWorld()
-    #if TEST
-    : counter(0)
-    #endif
+  P44BTDMXController()
   {
   }
 
@@ -80,6 +71,10 @@ public:
     // P44BTDMX receiver object
     dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
     dmxReceiver->setAddressingInfo(0); // TODO: get from DIP switches!
+    #if CONFIG_P44BTDMX_SYSTEMKEY
+    string systemkey = P44BTDMX_SYSTEMKEY;
+    if (!systemkey.empty()) dmxReceiver->setSystemKey(systemkey);
+    #endif
     #if JSONAPI
     // socket
     apiServer = SocketCommPtr(new SocketComm(MainLoop::currentMainLoop()));
@@ -87,16 +82,8 @@ public:
     apiServer->setAllowNonlocalConnections(true);
     ErrorPtr err = apiServer->startServer(boost::bind(&P44HelloWorld::apiConnectionHandler, this, _1), 10);
     #endif
-    #if TEST
-    #if NUM_LEDS>0
-    // ledchain direct test
-    ledChain = LEDChainCommPtr(new LEDChainComm(LEDChainComm::ledtype_ws281x, "gpio23", NUM_LEDS));
-    ledChain->begin();
-    #endif // NUM_LEDS>0
-    // second counter
-    counterTicket.executeOnce(boost::bind(&P44HelloWorld::count, this, _1));
-    #else
     // Real lights initialisation
+    #if P44BTDMX_PWMLIGHT
     P44DMXLightPtr light;
     // - PWM
     light = P44DMXLightPtr(new PWMLight(
@@ -105,8 +92,13 @@ public:
       new AnalogIo("pwmchip33.2", true, 0)
     ));
     dmxReceiver->addLight(light);
-    // - Ledchain
+    // - single Ledchain on DI0 (gpio23)
     LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio23:150:0:150:0:1");
+    #else
+    // - dual ledchains on DI1 and DI2 (gpio22 and gpio21)
+    LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio22:150:0:150:0:1");
+    LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio21:150:0:150:1:1");
+    #endif
     if (ledChainArrangement) {
       PixelRect r = ledChainArrangement->totalCover();
       ViewStackPtr rootView = ViewStackPtr(new ViewStack);
@@ -114,13 +106,18 @@ public:
       rootView->setBackgroundColor(black); // stack with black background is more efficient (and there's nothing below, anyway)
       ledChainArrangement->setRootView(rootView);
       ledChainArrangement->begin(true);
+      r.dy = 1;
+      r.y = 0;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
+      #if !P44BTDMX_PWMLIGHT
+      r.y = 1;
+      dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
+      #endif
       LOG(LOG_INFO, "lrg status: %s", rootView->viewStatus()->json_c_str());
     }
     else {
       LOG(LOG_ERR,"cannot create LED chain arrangement");
     }
-    #endif // !TEST
     // start scanning BLE advertisements
     BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));
   }
@@ -186,25 +183,6 @@ public:
 
   #endif // JSONAPI
 
-
-  #if TEST
-
-  void count(MLTimer &aTimer)
-  {
-    int ledidx = counter % NUM_LEDS;
-    ledChain->clear();
-    ledChain->setColor(ledidx, 255-(counter & 0xFF), counter & 0xFF, 0);
-    ledChain->show();
-    MainLoop::currentMainLoop().retriggerTimer(aTimer, 1*Second);
-    LOG(LOG_NOTICE, "Hello World #%d", counter);
-    #ifdef ESP_PLATFORM
-    LOG(LOG_INFO, "- app mem usage = %zd", memAtStart-heap_caps_get_free_size(MALLOC_CAP_8BIT));
-    #endif
-    counter++;
-  }
-
-  #endif // TEST
-
 };
 
 
@@ -218,7 +196,7 @@ int main(int argc, char **argv)
   LOG(LOG_EMERG, "Start of app - Free heap = %zd", memAtStart);
   #endif
   // create app with current mainloop
-  static P44HelloWorld application;
+  static P44BTDMXController application;
   // pass control to app object
   return application.main(0, NULL);
 }
