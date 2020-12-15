@@ -28,7 +28,6 @@
 
 #include "p44btdmx.hpp"
 
-
 #ifndef DEFAULT_P44BTDMX_SYSTEM_KEY
   #ifdef CONFIG_P44BTDMX_SYSTEM_KEY
     #define DEFAULT_P44BTDMX_SYSTEM_KEY CONFIG_P44BTDMX_SYSTEM_KEY
@@ -41,12 +40,56 @@
 
 using namespace p44;
 
+
+// MARK: - base class for sender and receiver
+
+
+P44BTDMXbase::P44BTDMXbase()
+{
+  setSystemKey(DEFAULT_P44BTDMX_SYSTEM_KEY);
+}
+
+
+void P44BTDMXbase::setSystemKey(const string aSystemKeyUserInput)
+{
+  if (aSystemKeyUserInput.empty() || aSystemKeyUserInput=="default") {
+    mSystemKey = DEFAULT_P44BTDMX_SYSTEM_KEY;
+  }
+  else if (aSystemKeyUserInput.size()>=64){
+    // read as hex string
+    mSystemKey = hexToBinaryString(aSystemKeyUserInput.c_str(), true, 32);
+  }
+  else {
+    // just use literally
+    mSystemKey = aSystemKeyUserInput;
+  }
+}
+
+
+uint8_t P44BTDMXbase::systemKeyByte(int aIndex)
+{
+  if (aIndex>=mSystemKey.size()) return 0x42;
+  return mSystemKey[aIndex];
+}
+
+
+// CCITT 16 bit CRC
+uint16_t P44BTDMXbase::crc16(uint16_t aCRC16, uint8_t aByteToAdd)
+{
+  uint16_t s;
+
+  s = (aByteToAdd ^ aCRC16) & 0xff;
+  s = s ^ (s << 4);
+  s = (aCRC16 >> 8) ^ (s << 8) ^ (s << 3) ^ (s >> 4);
+  return s & 0xffff;
+}
+
+
 // MARK: - plan44 DMX over Bluetooth receiver
 
 P44BTDMXreceiver::P44BTDMXreceiver() :
   mFirstLightNumber(0)
 {
-  mSystemKey = DEFAULT_P44BTDMX_SYSTEM_KEY;
 }
 
 P44BTDMXreceiver::~P44BTDMXreceiver()
@@ -110,26 +153,6 @@ void P44BTDMXreceiver::processBTAdvMfgData(const string aAdvMfgData)
 // - last two bytes of the payload are a CRC16 of the bytes preceeding them
 // - this leaves 21-4..27-4 = 17..23 effective p44DMX data bytes
 // - p44DMX data consists of delta update commands
-
-
-uint8_t P44BTDMXreceiver::systemKeyByte(int aIndex)
-{
-  if (aIndex>=mSystemKey.size()) return 0x42;
-  return mSystemKey[aIndex];
-}
-
-
-// CCITT 16 bit CRC
-uint16_t crc16(uint16_t aCRC16, uint8_t aByteToAdd)
-{
-  uint16_t s;
-
-  s = (aByteToAdd ^ aCRC16) & 0xff;
-  s = s ^ (s << 4);
-  s = (aCRC16 >> 8) ^ (s << 8) ^ (s << 3) ^ (s >> 4);
-  return s & 0xffff;
-}
-
 
 
 void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData)
@@ -296,29 +319,19 @@ void P44DMXLight::applyChannels()
 // MARK: - plan44 DMX over Bluetooth sender
 
 P44BTDMXsender::P44BTDMXsender() :
-  mInitialRepeatCount(3)
+  mInitialRepeatCount(3),
+  mRefreshUniverse(false)
 {
-  mSystemKey = DEFAULT_P44BTDMX_SYSTEM_KEY;
   for (int i=0; i<cUniverseSize; i++) {
     mUniverse[i].pending = 0;
     mUniverse[i].current = 0;
-    mUniverse[i].age = 128; // force all channels to be sent once initially, but with less priority than new changes
+    mUniverse[i].age = 0; // assume channels all sent out at start
   }
 }
 
 
 P44BTDMXsender::~P44BTDMXsender()
 {
-}
-
-void P44BTDMXsender::setSystemKey(const string aSystemKey)
-{
-  if (!aSystemKey.empty()) {
-    mSystemKey = aSystemKey;
-  }
-  else {
-    mSystemKey = DEFAULT_P44BTDMX_SYSTEM_KEY;
-  }
 }
 
 
@@ -330,13 +343,6 @@ void P44BTDMXsender::reset()
   }
 }
 
-
-
-uint8_t P44BTDMXsender::systemKeyByte(int aIndex)
-{
-  if (aIndex>=mSystemKey.size()) return 0x42;
-  return mSystemKey[aIndex];
-}
 
 
 string P44BTDMXsender::encodeP44BTDMXpayload(const string aPlainText)
@@ -407,17 +413,29 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
   }
   int room = aMaxBytes;
   int lastMaxAge = 9999;
+  int recentChangeMinAge = 255-mInitialRepeatCount;
+  uint8_t doneAge = 0;
   while (room>=2) {
-    // find highest remaining age
+    // find highest remaining age not already covered in this packet
     int maxAge = 0;
     for (int i=0; i<cUniverseSize; i++) {
-      if (mUniverse[i].age>maxAge) {
+      if (mUniverse[i].age>maxAge && mUniverse[i].age<lastMaxAge) {
         maxAge = mUniverse[i].age;
       }
     }
-    if (maxAge>=lastMaxAge) break; // no more aged values smaller than those already seen in last iteration
-    lastMaxAge = maxAge;
-    uint8_t doneAge = maxAge>255-mInitialRepeatCount ? maxAge-2 : 0;
+    if (maxAge==0) {
+      break; // no more aged values smaller than those already seen in last iteration
+    }
+    else if (maxAge>recentChangeMinAge) {
+      // high ages meaning we are repeating recent changes
+      lastMaxAge = recentChangeMinAge; // prevent repeating recent changes in same cycle
+      doneAge = maxAge-1; // repeat with one priority less than current cycle
+    }
+    else {
+      // just repeat oldest values
+      lastMaxAge = maxAge;
+      doneAge = 0;
+    }
     // generate updates for oldest (=most urgent) lights
     // Note: check light by light
     for (int lidx=0; lidx<cNumLights; lidx++) {
@@ -470,8 +488,10 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
     }
   }
   // one update created, now age all
-  for (int i=0; i<cUniverseSize; i++) {
-    if (mUniverse[i].age<255) mUniverse[i].age++;
+  if (mRefreshUniverse) {
+    for (int i=0; i<cUniverseSize; i++) {
+      if (mUniverse[i].age<recentChangeMinAge) mUniverse[i].age++;
+    }
   }
   // return the commands
   OLOG(LOG_INFO, "p44DMX delta cmds: %s", binaryToHexString(cmds, ' ').c_str());
@@ -483,7 +503,7 @@ string P44BTDMXsender::generateP44BTDMXpayload(int aMaxBytes, int aMinBytes)
 {
   string cmds = generateP44DMXcmds(aMaxBytes-2);
   if (cmds.empty()) return ""; // nothing at all
-  int fill = aMaxBytes-2-cmds.size();
+  int fill = aMaxBytes-2-(int)cmds.size();
   if (fill>0) {
     cmds.append(fill,0xFF); // fill up with extended/NOP commands
   }

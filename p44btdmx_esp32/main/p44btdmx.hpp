@@ -36,18 +36,42 @@ namespace p44 {
   class P44DMXLight;
   typedef boost::intrusive_ptr<P44DMXLight> P44DMXLightPtr;
 
-  class P44BTDMXreceiver : public P44LoggingObj
+
+  class P44BTDMXbase : public P44LoggingObj
   {
-    friend class P44DMXLight;
+  protected:
+
+    P44BTDMXbase();
 
     static const uint16_t cLightBytes = 5;
+    string mSystemKey;
+
+    uint8_t systemKeyByte(int aIndex);
+    static uint16_t crc16(uint16_t aCRC16, uint8_t aByteToAdd);
+
+  public:
+
+    /// set the system data obfuscation key
+    /// @param aSystemKeyUserInput user-provided system key input
+    /// - "default" and empty string use the default key
+    /// - a string of >=64 chars is read as >=32 bytes hex
+    /// - other strings are used as-is
+    void setSystemKey(const string aSystemKeyUserInput);
+
+  };
+
+
+
+  class P44BTDMXreceiver : public P44BTDMXbase
+  {
+    typedef P44BTDMXbase inherited;
+    friend class P44DMXLight;
+
 
     typedef std::vector<P44DMXLightPtr> LightsVector;
 
-    string mSystemKey;
     uint16_t mFirstLightNumber; ///< the first light ID we listen to (=DMX address / cLightBytes)
     LightsVector lights;
-
 
   public:
 
@@ -56,9 +80,6 @@ namespace p44 {
 
     /// @return prefix for log messages
     virtual string logContextPrefix() P44_OVERRIDE { return "p44BTDMX Rx"; };
-
-    /// set the system data obfuscation key
-    void setSystemKey(const string aSystemKey);
 
     /// set the addressing info
     /// @param aFirstLightNumber the first light number handled by this receiver
@@ -80,10 +101,6 @@ namespace p44 {
     /// process p44DMX decrypted delta update commands
     /// @param aP44DMXCmds plain text p44DMX delta commands
     void processP44DMX(const string aP44DMXCmds);
-
-  private:
-
-    uint8_t systemKeyByte(int aIndex);
 
   };
 
@@ -124,10 +141,10 @@ namespace p44 {
 
 
 
-  class P44BTDMXsender : public P44LoggingObj
+  class P44BTDMXsender : public P44BTDMXbase
   {
-    string mSystemKey;
-    static const uint16_t cLightBytes = 5;
+    typedef P44BTDMXbase inherited;
+
     static const uint16_t cNumLights = (255-2)/3; // limited not by DMX channels, but addr/command byte (3 cmds per light)
     static const int cUniverseSize = cLightBytes*cNumLights; // important to be NOT larger than actually monitored lights
 
@@ -139,6 +156,7 @@ namespace p44 {
 
     DMXChannel mUniverse[cUniverseSize];
     int mInitialRepeatCount;
+    bool mRefreshUniverse; ///< if set, the entire universe is refreshed regularily.
 
   public:
 
@@ -151,10 +169,15 @@ namespace p44 {
     /// @return prefix for log messages
     virtual string logContextPrefix() P44_OVERRIDE { return "p44BTDMX Tx"; };
 
-    /// set the system data obfuscation key
-    void setSystemKey(const string aSystemKey);
-
+    /// @param aInitialRepeatCount how many times a change is broadcast with priority before only
+    ///   being re-broadcast occasionally (or not at all when mRefreshUniverse is not set)
     void setInitialRepeatCount(int aInitialRepeatCount) { mInitialRepeatCount = aInitialRepeatCount; };
+
+    /// @param aRefreshUniverse if set, all values in the p44BTDMX universe (=420 channels, not 512!)
+    ///   will be regularily refreshed by re-broadcasting them. Note that this is the mode a central
+    ///   DMX sender should operate in, but apps for occasionally testing may not want to use
+    ///   refresh to allow multiple app instances being active.
+    void setRefreshUniverse(bool aRefreshUniverse) { mRefreshUniverse = aRefreshUniverse; }
 
     /// encode plaintext (e.g. p44DMX command) string as p44BTDMX payload
     string encodeP44BTDMXpayload(const string aPlainText);
@@ -184,10 +207,6 @@ namespace p44 {
     /// @param aMaxBytes maximum size of payload
     /// @param aMinBytes minimum size of payload
     string generateP44BTDMXpayload(int aMaxBytes, int aMinBytes = 0);
-
-  private:
-
-    uint8_t systemKeyByte(int aIndex);
 
   };
 
