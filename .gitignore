@@ -1,6 +1,7 @@
 # ESP_PLATFORM specifics
 p44btdmx_esp32/build/
 p44btdmx_esp32/sdkconfig.old
+p44btdmx_esp32/sdkconfig
 
 # XCode specifics
 *.xcodeproj/project.xcworkspace/xcshareddata/*.xcscmblueprint
