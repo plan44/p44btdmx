@@ -1,6 +1,6 @@
 set(srcs
   "esp_main.c"
-  "p44dmx_main.cpp"
+  "p44btdmx_main.cpp"
   "esp_bt.cpp"
   "p44btdmx.cpp"
   "pwmlight.cpp"
@@ -15,8 +15,8 @@ if(CONFIG_P44_WIFI_SUPPORT)
 endif()
 
 idf_component_register(
-  SRCS srcs
-  INCLUDE_DIRS incl)
+  SRCS "${srcs}"
+  INCLUDE_DIRS "${incl}")
 
 target_compile_options(${COMPONENT_LIB} PRIVATE
   -Wno-reorder

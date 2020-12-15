@@ -28,13 +28,10 @@
 
 #include "p44btdmx.hpp"
 
-#ifndef DEFAULT_P44BTDMX_SYSTEM_KEY
-  #ifdef CONFIG_P44BTDMX_SYSTEM_KEY
-    #define DEFAULT_P44BTDMX_SYSTEM_KEY CONFIG_P44BTDMX_SYSTEM_KEY
-  #else
-    //                                   01234567090123456709012345670901
-    #define DEFAULT_P44BTDMX_SYSTEM_KEY "NothingGreatButBetterThanNothing"
-  #endif
+#ifdef CONFIG_P44BTDMX_SYSTEM_KEY
+  #define DEFAULT_P44BTDMX_SYSTEM_KEY_INPUT CONFIG_P44BTDMX_SYSTEM_KEY
+#else
+  #define DEFAULT_P44BTDMX_SYSTEM_KEY_INPUT ""
 #endif
 
 
@@ -44,15 +41,19 @@ using namespace p44;
 // MARK: - base class for sender and receiver
 
 
+
 P44BTDMXbase::P44BTDMXbase()
 {
-  setSystemKey(DEFAULT_P44BTDMX_SYSTEM_KEY);
+  setSystemKey(DEFAULT_P44BTDMX_SYSTEM_KEY_INPUT); // use default
 }
 
 
+//                                   01234567090123456709012345670901
+#define DEFAULT_P44BTDMX_SYSTEM_KEY "NothingGreatButBetterThanNothing"
+
 void P44BTDMXbase::setSystemKey(const string aSystemKeyUserInput)
 {
-  if (aSystemKeyUserInput.empty() || aSystemKeyUserInput=="default") {
+  if (aSystemKeyUserInput.empty()) {
     mSystemKey = DEFAULT_P44BTDMX_SYSTEM_KEY;
   }
   else if (aSystemKeyUserInput.size()>=64){

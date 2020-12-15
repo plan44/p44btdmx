@@ -7,9 +7,13 @@ config P44_WIFI_SUPPORT
         This enables using Wifi at all in p44utils based app
 
 config P44BTDMX_SYSTEMKEY
-    string "P44BTDMX system key (>=32 bytes hex)"
+    string "P44BTDMX system key"
+    default ""
     help
         Encryption/Obfuscation key for P44BTDMX protocol
+        Can be a >=64 byte hex string to specify a binary system key
+        or just a text <64 bytes for a text key
+        or empty string to use the default key (basically: no key)
 
 config P44BTDMX_PWMLIGHT
     bool "Enables PWM light as light #0"
@@ -17,6 +21,7 @@ config P44BTDMX_PWMLIGHT
         This enables PWM R,G,B light as light #0
 
 choice ESP_WIFI_MODE
+    depends on P44_WIFI_SUPPORT
     prompt "AP or STA"
     default ESP_WIFI_IS_STATION
     help
@@ -30,23 +35,27 @@ endchoice
 
 config ESP_WIFI_MODE_AP
     bool
+    depends on P44_WIFI_SUPPORT
     default y if ESP_WIFI_IS_SOFTAP
     default n if ESP_WIFI_IS_STATION
 
 config ESP_WIFI_SSID
     string "WiFi SSID"
+    depends on P44_WIFI_SUPPORT
     default "myssid"
     help
 	SSID (network name) for the example to connect to.
 
 config ESP_WIFI_PASSWORD
     string "WiFi Password"
+    depends on P44_WIFI_SUPPORT
     default "mypassword"
     help
 	WiFi password (WPA or WPA2) for the example to use.
 
 config MAX_STA_CONN
     int "Max STA conn"
+    depends on P44_WIFI_SUPPORT
     default 4
     help
 	Max number of the STA connects to AP.

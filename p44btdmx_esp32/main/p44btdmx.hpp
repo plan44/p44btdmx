@@ -53,7 +53,7 @@ namespace p44 {
 
     /// set the system data obfuscation key
     /// @param aSystemKeyUserInput user-provided system key input
-    /// - "default" and empty string use the default key
+    /// - empty string means using the default key
     /// - a string of >=64 chars is read as >=32 bytes hex
     /// - other strings are used as-is
     void setSystemKey(const string aSystemKeyUserInput);

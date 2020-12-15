@@ -71,19 +71,19 @@ public:
     // P44BTDMX receiver object
     dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
     dmxReceiver->setAddressingInfo(0); // TODO: get from DIP switches!
-    #if CONFIG_P44BTDMX_SYSTEMKEY
-    string systemkey = P44BTDMX_SYSTEMKEY;
-    if (!systemkey.empty()) dmxReceiver->setSystemKey(systemkey);
+    #ifdef CONFIG_P44BTDMX_SYSTEMKEY
+    string systemkey = CONFIG_P44BTDMX_SYSTEMKEY;
+    dmxReceiver->setSystemKey(systemkey);
     #endif
     #if JSONAPI
     // socket
     apiServer = SocketCommPtr(new SocketComm(MainLoop::currentMainLoop()));
     apiServer->setConnectionParams(NULL, "8842", SOCK_STREAM, PF_UNSPEC);
     apiServer->setAllowNonlocalConnections(true);
-    ErrorPtr err = apiServer->startServer(boost::bind(&P44HelloWorld::apiConnectionHandler, this, _1), 10);
+    ErrorPtr err = apiServer->startServer(boost::bind(&P44BTDMXController::apiConnectionHandler, this, _1), 10);
     #endif
     // Real lights initialisation
-    #if P44BTDMX_PWMLIGHT
+    #if CONFIG_P44BTDMX_PWMLIGHT
     P44DMXLightPtr light;
     // - PWM
     light = P44DMXLightPtr(new PWMLight(
@@ -109,7 +109,7 @@ public:
       r.dy = 1;
       r.y = 0;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
-      #if !P44BTDMX_PWMLIGHT
+      #if !CONFIG_P44BTDMX_PWMLIGHT
       r.y = 1;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
       #endif
@@ -119,7 +119,7 @@ public:
       LOG(LOG_ERR,"cannot create LED chain arrangement");
     }
     // start scanning BLE advertisements
-    BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44HelloWorld::gotAdvertisement, this, _1, _2));
+    BtAdvertisementReceiver::sharedReceiver().start(boost::bind(&P44BTDMXController::gotAdvertisement, this, _1, _2));
   }
 
 
@@ -146,7 +146,7 @@ public:
   SocketCommPtr apiConnectionHandler(SocketCommPtr aServerSocketCommP)
   {
     JsonCommPtr conn = JsonCommPtr(new JsonComm(MainLoop::currentMainLoop()));
-    conn->setMessageHandler(boost::bind(&P44HelloWorld::gotMessage, this, _1, _2));
+    conn->setMessageHandler(boost::bind(&P44BTDMXController::gotMessage, this, _1, _2));
     return conn;
   }
 
