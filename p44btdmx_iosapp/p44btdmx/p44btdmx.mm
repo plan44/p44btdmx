@@ -25,7 +25,7 @@ using namespace p44;
   if ((self = [super init])) {
     SETLOGLEVEL(LOG_NOTICE);
     dmxSender = P44BTDMXsenderPtr(new P44BTDMXsender);
-    dmxSender->setInitialRepeatCount(0); // no repetitions
+    dmxSender->setInitialRepeatCount(3); // no repetitions
   }
   return self;
 }
@@ -36,6 +36,12 @@ using namespace p44;
   string k;
   k.assign([aSystemKey cStringUsingEncoding:NSUTF8StringEncoding]);
   dmxSender->setSystemKey(k);
+}
+
+
+- (void)setRefreshUniverse:(bool)aRefreshUniverse
+{
+  dmxSender->setRefreshUniverse(aRefreshUniverse);
 }
 
 

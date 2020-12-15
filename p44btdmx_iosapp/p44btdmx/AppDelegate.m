@@ -95,12 +95,14 @@
 - (void)nextBeacon
 {
   NSData* advData = [mP44BTDMX iBeaconAdvertisementData];
+  #if !TARGET_IPHONE_SIMULATOR
   if ([advData length]>0) {
     [self advertiseIBeaconData:advData];
   }
   else {
     [mPeripheralManager stopAdvertising];
   }
+  #endif // !TARGET_IPHONE_SIMULATOR
   [self performSelector:@selector(nextBeacon) withObject:nil afterDelay:0.1];
 }
 
@@ -147,9 +149,11 @@
 }
 
 
-- (void)readSystemKey
+- (void)readConfig
 {
   [mP44BTDMXManager.p44BTDMX setSystemKey:[[NSUserDefaults standardUserDefaults] objectForKey:@"p44BtDMXsystemKey"]];
+  [mP44BTDMXManager.p44BTDMX setRefreshUniverse:[[NSUserDefaults standardUserDefaults] boolForKey:@"p44BtDMXrefreshUniverse"]];
+
 }
 
 
@@ -157,7 +161,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   mP44BTDMXManager = [[P44BTDMXManager alloc] init];
-  [self readSystemKey];
+  [self readConfig];
   // set system key from userdefaults
   return YES;
 }

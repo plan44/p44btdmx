@@ -131,7 +131,8 @@
 {
   SettingsViewController *settings = (SettingsViewController *)[unwindSegue sourceViewController];
   [[NSUserDefaults standardUserDefaults] setValue:settings.systemKeyTextfield.text forKey:@"p44BtDMXsystemKey"];
-  [[AppDelegate sharedAppDelegate] readSystemKey];
+  [[NSUserDefaults standardUserDefaults] setBool:settings.refreshUniverseSwitch.on forKey:@"p44BtDMXrefreshUniverse"];
+  [[AppDelegate sharedAppDelegate] readConfig];
 }
 
 

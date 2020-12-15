@@ -23,6 +23,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
   self.systemKeyTextfield.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"p44BtDMXsystemKey"];
+  self.refreshUniverseSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"p44BtDMXrefreshUniverse"];
   [super viewWillAppear:animated];
 }
 

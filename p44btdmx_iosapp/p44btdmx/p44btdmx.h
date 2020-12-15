@@ -16,6 +16,7 @@
 
 - (id)init;
 - (void)setSystemKey:(NSString*)aSystemKey;
+- (void)setRefreshUniverse:(bool)aRefreshUniverse;
 - (void)reset;
 - (void)setChannel:(int)aChannel toValue:(UInt8)aValue;
 - (UInt8)getChannel:(int)aChannel;
