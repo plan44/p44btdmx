@@ -30,6 +30,30 @@
 #endif
 
 
+#ifndef CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0
+  #if CONFIG_P44BTDMX_PWMLIGHT
+    // - single ledchain on DI0 (gpio23)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:150:0:150:0:1"
+  #else
+    // - dual ledchains on DI1 and DI2 (gpio22 and gpio21)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio22:150:0:150:0:1"
+  #endif
+#endif
+#ifndef CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1
+  #if CONFIG_P44BTDMX_PWMLIGHT
+    // - single ledchain on DI0 (gpio23)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:150:0:150:0:1"
+  #else
+    // - dual ledchains on DI1 and DI2 (gpio22 and gpio21)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio22:150:0:150:0:1"
+  #endif
+#endif
+#ifndef CONFIG_P44BTDMX_SECONDCHAIN_CFG
+  // - second ledchain on DI2 (gpio21)
+  #define CONFIG_P44BTDMX_SECONDCHAIN_CFG "WS2813:gpio21:150:0:150:1:1"
+#endif
+
+
 using namespace p44;
 
 static size_t memAtStart = 0;
@@ -66,11 +90,22 @@ public:
   virtual void initialize()
   {
     LOG(LOG_NOTICE,"initialize");
+    // get DIP switch state
+    // A0..A5 = GPIO26,27,32,34,35,18 (18 must be patched, is connected to 7 which disturbs SPI flash)
+    const int numSwitchBits = 6;
+    int switchpins[numSwitchBits] = { 26, 27, 32, 34, 35, 18 };
+    int dispswitch = 0;
+    for (int i=0; i<numSwitchBits; i++) {
+      DigitalIoPtr bit = DigitalIoPtr(new DigitalIo(string_format("+/gpio.%d",switchpins[i]).c_str(), false));
+      MainLoop::sleep(5*MilliSecond); // give pullup chance to actually pull pin up
+      dispswitch |= bit->isSet() ? (1<<i) : 0;
+    }
+    LOG(LOG_NOTICE, "DIP Switch = 0x%02X", dispswitch);
     // enable LED chain outputs in P44-BTLC
     ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
     // P44BTDMX receiver object
     dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
-    dmxReceiver->setAddressingInfo(0); // TODO: get from DIP switches!
+    dmxReceiver->setAddressingInfo((dispswitch & 0x1F)*2); // 64 lights max, in steps of 2
     #ifdef CONFIG_P44BTDMX_SYSTEMKEY
     string systemkey = CONFIG_P44BTDMX_SYSTEMKEY;
     dmxReceiver->setSystemKey(systemkey);
@@ -83,6 +118,7 @@ public:
     ErrorPtr err = apiServer->startServer(boost::bind(&P44BTDMXController::apiConnectionHandler, this, _1), 10);
     #endif
     // Real lights initialisation
+    const char *firstChainConfig = (dispswitch&0x20) ? CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 : CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0;
     #if CONFIG_P44BTDMX_PWMLIGHT
     P44DMXLightPtr light;
     // - PWM
@@ -92,12 +128,13 @@ public:
       new AnalogIo("pwmchip33.2", true, 0)
     ));
     dmxReceiver->addLight(light);
-    // - single Ledchain on DI0 (gpio23)
-    LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio23:150:0:150:0:1");
+    // - single ledchain
+    LEDChainArrangement::addLEDChain(ledChainArrangement, firstChainConfig);
     #else
-    // - dual ledchains on DI1 and DI2 (gpio22 and gpio21)
-    LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio22:150:0:150:0:1");
-    LEDChainArrangement::addLEDChain(ledChainArrangement, "WS2813:gpio21:150:0:150:1:1");
+    // - dual ledchains
+    const char *secondChainConfig = CONFIG_P44BTDMX_SECONDCHAIN_CFG;
+    LEDChainArrangement::addLEDChain(ledChainArrangement, firstChainConfig);
+    LEDChainArrangement::addLEDChain(ledChainArrangement, secondChainConfig);
     #endif
     if (ledChainArrangement) {
       PixelRect r = ledChainArrangement->totalCover();
