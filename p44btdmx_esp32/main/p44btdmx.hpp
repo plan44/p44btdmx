@@ -71,7 +71,8 @@ namespace p44 {
     typedef std::vector<P44DMXLightPtr> LightsVector;
 
     uint16_t mFirstLightNumber; ///< the first light ID we listen to (=DMX address / cLightBytes)
-    LightsVector lights;
+    LightsVector mLights;
+    MLMicroSeconds mlastNativeData;
 
   public:
 
@@ -96,7 +97,9 @@ namespace p44 {
 
     /// process p44BTDMX payload data, coming from one of the possible carriers, encrypted/obfuscated by the system key
     /// @param aP44BTDMXData raw p44BTDMX data
-    void processP44BTDMXpayload(const string aP44BTDMXData);
+    /// @param aNative if set, the payload is considered "native", i.e. coming from a dedicated P44BTDMX sender,
+    ///   not from a iBeacon sent by an iOS device.
+    void processP44BTDMXpayload(const string aP44BTDMXData, bool aNative);
 
     /// process p44DMX decrypted delta update commands
     /// @param aP44DMXCmds plain text p44DMX delta commands

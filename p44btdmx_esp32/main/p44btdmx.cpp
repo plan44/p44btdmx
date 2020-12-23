@@ -89,7 +89,8 @@ uint16_t P44BTDMXbase::crc16(uint16_t aCRC16, uint8_t aByteToAdd)
 // MARK: - plan44 DMX over Bluetooth receiver
 
 P44BTDMXreceiver::P44BTDMXreceiver() :
-  mFirstLightNumber(0)
+  mFirstLightNumber(0),
+  mlastNativeData(Never)
 {
 }
 
@@ -136,13 +137,13 @@ void P44BTDMXreceiver::processBTAdvMfgData(const string aAdvMfgData)
   if (companyBTId==BT_COMPANY_ID_PLAN44 || companyBTId==BT_COMPANY_ID_BLUEKITCHEN) {
     // raw p44BTDMX
     if (aAdvMfgData[2]==PLAN44_SUBTYPE_P44BTDMX) {
-      processP44BTDMXpayload(aAdvMfgData.substr(3));
+      processP44BTDMXpayload(aAdvMfgData.substr(3), true);
     }
   }
   if (companyBTId==BT_COMPANY_ID_APPLE) {
     // check for p44BTDMX disguised as Apple iBeacon
     if (aAdvMfgData[2]==APPLE_SUBTYPE_IBEACON) {
-      processP44BTDMXpayload(aAdvMfgData.substr(4,(size_t)aAdvMfgData[3]));
+      processP44BTDMXpayload(aAdvMfgData.substr(4,(size_t)aAdvMfgData[3]), false);
     }
   }
 }
@@ -155,28 +156,36 @@ void P44BTDMXreceiver::processBTAdvMfgData(const string aAdvMfgData)
 // - this leaves 21-4..27-4 = 17..23 effective p44DMX data bytes
 // - p44DMX data consists of delta update commands
 
+#define NOT_NATIVE_LOCKOUT_PERIOD (10*Second)
 
-void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData)
+void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool aNative)
 {
   FOCUSLOG("Got p44BTDMX payload: %s", binaryToHexString(aP44BTDMXData,' ').c_str());
-  // decode from system key and verify CRC
-  uint16_t crc = 0;
-  string decoded;
-  int i;
-  for (i=0; i<aP44BTDMXData.size()-2; i++) {
-    uint8_t b = aP44BTDMXData[i] ^ systemKeyByte(i);
-    crc = crc16(crc, b);
-    decoded.append(1, b);
-  }
-  uint16_t recCrc =
-    ((aP44BTDMXData[i] ^ systemKeyByte(i)) << 8) |
-    (aP44BTDMXData[i+1] ^ systemKeyByte(i+1));
-  if (recCrc==crc) {
-    // valid p44BTDMX data
-    processP44DMX(decoded);
+  MLMicroSeconds now = MainLoop::now();
+  if (aNative || now-mlastNativeData>NOT_NATIVE_LOCKOUT_PERIOD) {
+    if (aNative) mlastNativeData = now;
+    // decode from system key and verify CRC
+    uint16_t crc = 0;
+    string decoded;
+    int i;
+    for (i=0; i<aP44BTDMXData.size()-2; i++) {
+      uint8_t b = aP44BTDMXData[i] ^ systemKeyByte(i);
+      crc = crc16(crc, b);
+      decoded.append(1, b);
+    }
+    uint16_t recCrc =
+      ((aP44BTDMXData[i] ^ systemKeyByte(i)) << 8) |
+      (aP44BTDMXData[i+1] ^ systemKeyByte(i+1));
+    if (recCrc==crc) {
+      // valid p44BTDMX data
+      processP44DMX(decoded);
+    }
+    else {
+      FOCUSLOG("- p44BTDMX CRC error: received = 0x%04hX, expected=0x%04hX", recCrc, crc)
+    }
   }
   else {
-    FOCUSLOG("- p44BTDMX CRC error: received = 0x%04hX, expected=0x%04hX", recCrc, crc)
+    FOCUSLOG("- not handling non-native data arriving less than %d seconds after native data", NOT_NATIVE_LOCKOUT_PERIOD/Second);
   }
 }
 
@@ -212,14 +221,14 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
     FOCUSLOG("Command for Global Light #%d (DMX: %d)", lightIndex, lightIndex*cLightBytes);
     uint8_t cmd = addrCmd - 3*lightIndex; // modulo 3
     lightIndex -= mFirstLightNumber;
-    if (lightIndex>=lights.size()) lightIndex = -1; // not one of our lights
+    if (lightIndex>=mLights.size()) lightIndex = -1; // not one of our lights
     if (i++>=ln) return; // error, not enough data: all commands have at least one byte
     switch (cmd) {
       case 0: {
         uint8_t b = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
           FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, b);
-          P44DMXLightPtr light = lights[lightIndex];
+          P44DMXLightPtr light = mLights[lightIndex];
           light->setChannel(2,b);
           light->applyChannels();
         }
@@ -232,7 +241,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         uint8_t b = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
           FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X %02X %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, h, s, b);
-          P44DMXLightPtr light = lights[lightIndex];
+          P44DMXLightPtr light = mLights[lightIndex];
           light->setChannel(0,h);
           light->setChannel(1,s);
           light->setChannel(2,b);
@@ -246,7 +255,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         uint8_t mode = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
           FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, pos, mode);
-          P44DMXLightPtr light = lights[lightIndex];
+          P44DMXLightPtr light = mLights[lightIndex];
           light->setChannel(3,pos);
           light->setChannel(4,mode);
           light->applyChannels();
@@ -269,8 +278,8 @@ void P44BTDMXreceiver::setAddressingInfo(int aFirstLightNumber)
 void P44BTDMXreceiver::addLight(P44DMXLightPtr aLight)
 {
   aLight->mGlobalLightOffset = mFirstLightNumber;
-  aLight->mLocalLightNumber = lights.size();
-  lights.push_back(aLight);
+  aLight->mLocalLightNumber = mLights.size();
+  mLights.push_back(aLight);
   aLight->applyChannels(); // set initial state
 }
 
