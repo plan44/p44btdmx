@@ -7,3 +7,4 @@ p44btdmx_esp32/sdkconfig
 *.xcodeproj/project.xcworkspace/xcshareddata/*.xcscmblueprint
 *.xcodeproj/xcuserdata
 *.xcuserstate
+*.xcbkptlist

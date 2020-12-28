@@ -209,7 +209,15 @@ namespace p44 {
     /// generate p44BTDMX payload (with CRC and encrypted/obfuscated by the system key)
     /// @param aMaxBytes maximum size of payload
     /// @param aMinBytes minimum size of payload
+    /// @return p44BTDMX payload data to be included in an iBeacon or in
+    ///   a manufacturer specific advertisement structure
     string generateP44BTDMXpayload(int aMaxBytes, int aMinBytes = 0);
+
+    /// generate BT advertisement raw data containing P44BTDMX packaged in
+    /// a manufacturer specific advertisement structure (AD struct)
+    /// @param aMaxBytes maximum size of generated advertisement data
+    /// @return raw advertisement data that can be passed to BT for sending
+    string generateBTAdvMfgData(int aMaxBytes = 31);
 
   };
 

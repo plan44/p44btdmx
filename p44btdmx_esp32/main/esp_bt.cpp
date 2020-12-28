@@ -37,40 +37,65 @@ using namespace p44;
 
 // MARK: - Bluetooth advertisement receiver
 
-static BtAdvertisementReceiver* sharedReceiverP = NULL;
+static BtAdvertisements* sharedAdvertisementsInstanceP = NULL;
 
 
-BtAdvertisementReceiver& BtAdvertisementReceiver::sharedReceiver()
+BtAdvertisements& BtAdvertisements::sharedInstance()
 {
-  if (!sharedReceiverP) {
-    sharedReceiverP = new BtAdvertisementReceiver();
+  if (!sharedAdvertisementsInstanceP) {
+    sharedAdvertisementsInstanceP = new BtAdvertisements();
   }
-  return *sharedReceiverP;
+  return *sharedAdvertisementsInstanceP;
 }
 
 
-BtAdvertisementReceiver::BtAdvertisementReceiver() :
+BtAdvertisements::BtAdvertisements() :
   mBTInitialized(false)
 {
 }
 
-BtAdvertisementReceiver::~BtAdvertisementReceiver()
+BtAdvertisements::~BtAdvertisements()
 {
-  stop();
+  stopAdvertising();
+  stopScanning();
 }
+
+
+static esp_ble_scan_params_t ble_scan_params = {
+  .scan_type              = BLE_SCAN_TYPE_ACTIVE,
+  .own_addr_type          = BLE_ADDR_TYPE_PUBLIC,
+  .scan_filter_policy     = BLE_SCAN_FILTER_ALLOW_ALL,
+  .scan_interval          = 0x20, // 0x10 = 10mS (scan interval = N*0.625mS), can be 0x0004..0x4000
+  .scan_window            = 0x18, // 0x10 = 10mS (must be less than interval)
+  .scan_duplicate         = BLE_SCAN_DUPLICATE_DISABLE // link layer reports all packets, including duplicates
+};
+
+
+static esp_ble_adv_params_t ble_adv_params = {
+  .adv_int_min        = 0x20,
+  .adv_int_max        = 0x40,
+  .adv_type           = ADV_TYPE_NONCONN_IND,
+  .own_addr_type      = BLE_ADDR_TYPE_PUBLIC,
+  .channel_map        = ADV_CHNL_ALL,
+  .adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY,
+};
 
 
 void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
-  BtAdvertisementReceiver::sharedReceiver().gapCBHandler(event, param);
+  BtAdvertisements::sharedInstance().gapCBHandler(event, param);
 }
 
 
-void BtAdvertisementReceiver::gapCBHandler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
+void BtAdvertisements::gapCBHandler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
   ErrorPtr err;
   FOCUSLOG("esp_gap_cb: event=%d", event);
   switch (event) {
+    case ESP_GAP_BLE_ADV_DATA_RAW_SET_COMPLETE_EVT: {
+      esp_ble_gap_start_advertising(&ble_adv_params);
+      break;
+    }
     case ESP_GAP_BLE_SCAN_PARAM_SET_COMPLETE_EVT: {
       esp_ble_gap_start_scanning(mScanTime);
       break;
@@ -83,7 +108,12 @@ void BtAdvertisementReceiver::gapCBHandler(esp_gap_ble_cb_event_t event, esp_ble
     case ESP_GAP_BLE_ADV_START_COMPLETE_EVT: {
       // adv start complete event to indicate adv start successfully or failed
       err = EspError::err(param->adv_start_cmpl.status, "BLE advertisement start failed: ");
-      break;
+      if (mAdvertisingStartedCB) {
+        Application::sharedApplication()->mainLoop().executeNowFromForeignTask(
+          boost::bind(&BtAdvertisements::startedCallback, mAdvertisingStartedCB, err)
+        );
+      }
+      return;
     }
     case ESP_GAP_BLE_SCAN_STOP_COMPLETE_EVT: {
       err = EspError::err(param->scan_stop_cmpl.status, "BLE scan stop failed: ");
@@ -113,48 +143,42 @@ void BtAdvertisementReceiver::gapCBHandler(esp_gap_ble_cb_event_t event, esp_ble
     default:
       break;
   }
-  if (Error::notOK(err) && mAdvertisementCB) {
+  if (Error::notOK(err)) {
     FOCUSLOG("GAP event handler Error: %s", err->text());
     deliverAdvertisement(err, "");
   }
 }
 
 
-void BtAdvertisementReceiver::deliverAdvertisement(ErrorPtr aError, const string aAdvData)
+void BtAdvertisements::deliverAdvertisement(ErrorPtr aError, const string aAdvData)
 {
   if (mAdvertisementCB) {
     FOCUSLOG("posting Advertisement handler execution from mainloop@%p", &MainLoop::currentMainLoop());
     // make sure this executes on the main thread
     Application::sharedApplication()->mainLoop().executeNowFromForeignTask(
-      boost::bind(&BtAdvertisementReceiver::deliveryCallback, mAdvertisementCB, aError, aAdvData)
+      boost::bind(&BtAdvertisements::deliveryCallback, mAdvertisementCB, aError, aAdvData)
     );
   }
 }
 
 
-void BtAdvertisementReceiver::deliveryCallback(BTAdvertisementCB aCallback, ErrorPtr aError, const string aAdvData)
+void BtAdvertisements::deliveryCallback(BTAdvertisementCB aCallback, ErrorPtr aError, const string aAdvData)
 {
   FOCUSLOG("calling Advertisement handler in mainloop@%p", &MainLoop::currentMainLoop());
   aCallback(aError, aAdvData);
 }
 
 
-
-
-static esp_ble_scan_params_t ble_scan_params = {
-  .scan_type              = BLE_SCAN_TYPE_ACTIVE,
-  .own_addr_type          = BLE_ADDR_TYPE_PUBLIC,
-  .scan_filter_policy     = BLE_SCAN_FILTER_ALLOW_ALL,
-  .scan_interval          = 0x50, // 0x10 = 10mS (scan interval = N*0.625mS), can be 0x0004..0x4000
-  .scan_window            = 0x30, // 0x10 = 10mS (must be less than interval)
-  .scan_duplicate         = BLE_SCAN_DUPLICATE_DISABLE // link layer reports all packets, including duplicates
-};
-
-
-ErrorPtr BtAdvertisementReceiver::start(BTAdvertisementCB aAdvertisementCB, uint32_t aScanTime)
+void BtAdvertisements::startedCallback(StatusCB aCallback, ErrorPtr aError)
 {
-  mScanTime = aScanTime;
-  mAdvertisementCB = aAdvertisementCB;
+  FOCUSLOG("calling advertisement started handler in mainloop@%p", &MainLoop::currentMainLoop());
+  aCallback(aError);
+}
+
+
+
+ErrorPtr BtAdvertisements::initBLE()
+{
   ErrorPtr err;
   if (!mBTInitialized) {
     err = EspError::err(nvs_flash_init(), "nvs_flash_init: ");
@@ -169,28 +193,61 @@ ErrorPtr BtAdvertisementReceiver::start(BTAdvertisementCB aAdvertisementCB, uint
       // init the stack
       esp_bluedroid_init();
       esp_bluedroid_enable();
+      // set highest tx power for advertisements
+      err = EspError::err(esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_P9), "setting tx power: ");
+    }
+    if (Error::isOK(err)) {
       // init the GAP callback
       err = EspError::err(esp_ble_gap_register_callback(esp_gap_cb), "register GAP callback: ");
     }
     mBTInitialized = Error::isOK(err);
   }
-  // now set up scanning for advertisements
-  if (Error::isOK(err)) {
-    esp_ble_gap_set_scan_params(&ble_scan_params);
-  }
-
   return err;
 }
 
 
-void BtAdvertisementReceiver::stop()
+ErrorPtr BtAdvertisements::startScanning(BTAdvertisementCB aAdvertisementCB, uint32_t aScanTime)
+{
+  mScanTime = aScanTime;
+  mAdvertisementCB = aAdvertisementCB;
+  ErrorPtr err = initBLE();
+  // now set up scanning for advertisements
+  if (Error::isOK(err)) {
+    esp_ble_gap_set_scan_params(&ble_scan_params);
+  }
+  return err;
+}
+
+
+void BtAdvertisements::stopScanning()
 {
   mAdvertisementCB = NULL;
   esp_ble_gap_stop_scanning();
 }
 
 
-// MARK: - Advertisemnt decoding utilities
+
+ErrorPtr BtAdvertisements::startAdvertising(StatusCB aAdvertisingCB, const string aAdvData)
+{
+  ErrorPtr err = initBLE();
+  // now set up advertising
+  if (Error::isOK(err)) {
+    stopAdvertising();
+    mAdvertisingStartedCB = aAdvertisingCB;
+    ErrorPtr err = EspError::err(esp_ble_gap_config_adv_data_raw((uint8_t*)aAdvData.c_str(), aAdvData.size()), "setting advertisement raw data: ");
+  }
+  return err;
+}
+
+
+void BtAdvertisements::stopAdvertising()
+{
+  mAdvertisingStartedCB = NULL;
+  esp_ble_gap_stop_advertising();
+}
+
+
+// MARK: - Advertisement decoding utilities
 
 // - BT Advertisement data (AdvData) consists of 0..31 bytes (plus header containing randomized BT address)
 //   See BT core specs 2.3.1 "Advertisement PDUs"
@@ -203,7 +260,7 @@ void BtAdvertisementReceiver::stop()
 // - The AD types are described in the BT core spec supplement, chapter 1.
 
 
-bool BtAdvertisementReceiver::findADStruct(const uint8_t* aAdvData, uint8_t aType, const uint8_t* &aStructData, uint8_t &aStructLen)
+bool BtAdvertisements::findADStruct(const uint8_t* aAdvData, uint8_t aType, const uint8_t* &aStructData, uint8_t &aStructLen)
 {
   const uint8_t maxAdvDataLen = 31;
   uint8_t idx = 0;
@@ -223,8 +280,6 @@ bool BtAdvertisementReceiver::findADStruct(const uint8_t* aAdvData, uint8_t aTyp
   }
   return false; // not found
 }
-
-
 
 
 #else // ESP_PLATFORM

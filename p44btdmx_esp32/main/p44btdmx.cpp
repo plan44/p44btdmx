@@ -24,7 +24,7 @@
 #define ALWAYS_DEBUG 0
 // - set FOCUSLOGLEVEL to non-zero log level (usually, 5,6, or 7==LOG_DEBUG) to get focus (extensive logging) for this file
 //   Note: must be before including "logger.hpp" (or anything that includes "logger.hpp")
-#define FOCUSLOGLEVEL 0
+#define FOCUSLOGLEVEL 7
 
 #include "p44btdmx.hpp"
 
@@ -114,10 +114,10 @@ P44BTDMXreceiver::~P44BTDMXreceiver()
 // 1) to be able to use an iPhone for controlling w/o a DMX box:
 //    - use the iBeacons payload = 21 bytes p44DMX data
 // 2) for max data and BT specs conformant use on stage (with the DMX box)
-//    - use a Bluekitchen (later: plan44) manufacturer specific data packet, no flags = 28 bytes payload
+//    - use a Bluekitchen (later: plan44) manufacturer specific data packet, no flags = 27 bytes payload
 //    - use first byte as a subtype (of Bluekitchen/plan44 manufacturer specific packets)
 //      - 0x44 = subtype p44DMX
-//    - rest of payload == 27 bytes p44DMX data
+//    - rest of payload == 26 bytes p44DMX data
 
 // 4C 00 02 15 B1 6F C6 BB D1 D1 42 8A 8C 03 55 BA D7 F7 04 81 00 FE FE 00 C5
 
@@ -185,7 +185,7 @@ void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool a
     }
   }
   else {
-    FOCUSLOG("- not handling non-native data arriving less than %d seconds after native data", NOT_NATIVE_LOCKOUT_PERIOD/Second);
+    FOCUSLOG("- not handling non-native data arriving less than %lld seconds after native data", NOT_NATIVE_LOCKOUT_PERIOD/Second);
   }
 }
 
@@ -381,6 +381,11 @@ uint8_t P44BTDMXsender::getChannel(uint16_t aDMXChannel)
 void P44BTDMXsender::setChannel(uint16_t aDMXChannel, uint8_t aValue)
 {
   if (aDMXChannel>=cUniverseSize) return;
+  if (FOCUSLOGGING) {
+    if (mUniverse[aDMXChannel].pending!=aValue) {
+      FOCUSLOG("DMX #%u pending value changes from %u to %u", aDMXChannel, mUniverse[aDMXChannel].pending, aValue);
+    }
+  }
   mUniverse[aDMXChannel].pending = aValue;
 }
 
@@ -416,7 +421,7 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
   // detect changes
   for (int i=0; i<cUniverseSize; i++) {
     if (mUniverse[i].pending != mUniverse[i].current) {
-      LOG(LOG_NOTICE, "channel #%d changes from %d to %d", i, mUniverse[i].current, mUniverse[i].pending);
+      LOG(LOG_INFO, "channel #%d changes from %d to %d", i, mUniverse[i].current, mUniverse[i].pending);
       mUniverse[i].age = 255;
       mUniverse[i].current = mUniverse[i].pending;
     }
@@ -504,18 +509,36 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
     }
   }
   // return the commands
-  OLOG(LOG_INFO, "p44DMX delta cmds: %s", binaryToHexString(cmds, ' ').c_str());
+  if (LOGENABLED(LOG_INFO) && !cmds.empty()) {
+    OLOG(LOG_INFO, "p44DMX delta cmds: %s", binaryToHexString(cmds, ' ').c_str());
+  }
   return cmds;
 }
 
 
 string P44BTDMXsender::generateP44BTDMXpayload(int aMaxBytes, int aMinBytes)
 {
+  if (aMinBytes==0) aMinBytes = aMaxBytes-2;
   string cmds = generateP44DMXcmds(aMaxBytes-2);
   if (cmds.empty()) return ""; // nothing at all
-  int fill = aMaxBytes-2-(int)cmds.size();
+  int fill = aMinBytes-(int)cmds.size();
   if (fill>0) {
     cmds.append(fill,0xFF); // fill up with extended/NOP commands
   }
   return encodeP44BTDMXpayload(cmds);
+}
+
+
+string P44BTDMXsender::generateBTAdvMfgData(int aMaxBytes)
+{
+  string payload = generateP44BTDMXpayload(aMaxBytes-5);
+  if (payload.empty()) return ""; // nothing at all
+  string advData;
+  advData.append(1, payload.size()+4); // length = ADStruct type, 2 byte company identifier, 1 byte subytpe + payload
+  advData.append(1, 0xFF); // ADStruct type: manufacturer specific data
+  advData.append(1, BT_COMPANY_ID_BLUEKITCHEN & 0xFF); // LSB of company ID
+  advData.append(1, (BT_COMPANY_ID_BLUEKITCHEN>>8) & 0xFF); // MSB of company ID
+  advData.append(1, PLAN44_SUBTYPE_P44BTDMX); // subtype
+  advData.append(payload);
+  return advData;
 }

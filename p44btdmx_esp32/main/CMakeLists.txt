@@ -2,6 +2,7 @@ set(srcs
   "esp_main.c"
   "p44btdmx_main.cpp"
   "esp_bt.cpp"
+  "esp_dmx_rx.cpp"
   "p44btdmx.cpp"
   "pwmlight.cpp"
   "p44lrglight.cpp")

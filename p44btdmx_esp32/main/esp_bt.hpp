@@ -44,30 +44,42 @@ namespace p44 {
 
   typedef boost::function<void (ErrorPtr aError, const string aAdvData)> BTAdvertisementCB;
 
-  class BtAdvertisementReceiver : public P44LoggingObj
+  class BtAdvertisements : public P44LoggingObj
   {
 
     bool mBTInitialized;
     BTAdvertisementCB mAdvertisementCB;
     uint32_t mScanTime; // how long to keep scanning, 0=forever
 
-    BtAdvertisementReceiver();
-    virtual ~BtAdvertisementReceiver();
+    StatusCB mAdvertisingStartedCB;
+
+    BtAdvertisements();
+    virtual ~BtAdvertisements();
 
   public:
     friend void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param);
 
     /// access to singleton
-    static BtAdvertisementReceiver& sharedReceiver();
+    static BtAdvertisements& sharedInstance();
 
-    /// start receiving BT advertisements
+    /// start scanning for BT advertisements
     /// @param aAdvertisementCB is called with advertisement data when some is received
     /// @param aScanTime how long to keep scanning, default=0=forever
     /// @return NULL if ok or error
-    ErrorPtr start(BTAdvertisementCB aAdvertisementCB, uint32_t aScanTime = 0);
+    ErrorPtr startScanning(BTAdvertisementCB aAdvertisementCB, uint32_t aScanTime = 0);
 
-    /// stop receiving advertisements
-    void stop();
+    /// stop scanning for (receiving) advertisements
+    void stopScanning();
+
+    /// start advertising specified aAdvData
+    /// @note will stop previous advertisement
+    /// @param aAdvertisingCB is called with advertising has started (or could not start due to error)
+    /// @param aAdvData advertisement data binary string, max 31 bytes
+    /// @return NULL if ok or error
+    ErrorPtr startAdvertising(StatusCB aAdvertisingCB, const string aAdvData);
+
+    /// stop advertising
+    void stopAdvertising();
 
     /// @return prefix for log messages
     virtual string logContextPrefix() P44_OVERRIDE { return "BT Advertisement Receiver"; };
@@ -84,8 +96,10 @@ namespace p44 {
 
   private:
 
+    ErrorPtr initBLE();
     void deliverAdvertisement(ErrorPtr aError, const string aAdvData);
     static void deliveryCallback(BTAdvertisementCB aCallback, ErrorPtr aError, const string aAdvData);
+    static void startedCallback(StatusCB aCallback, ErrorPtr aError);
 
   };
 

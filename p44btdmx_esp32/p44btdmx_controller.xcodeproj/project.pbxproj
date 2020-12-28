@@ -31,6 +31,7 @@
 		ED0AF1D4223ABAAC00E3E7FC /* printbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1B2223A97EB00E3E7FC /* printbuf.c */; };
 		ED0AF1D5223ABAAC00E3E7FC /* random_seed.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF160223A97EB00E3E7FC /* random_seed.c */; };
 		ED0AF1D6223ABB1900E3E7FC /* json_object.c in Sources */ = {isa = PBXBuildFile; fileRef = ED0AF1A3223A97EB00E3E7FC /* json_object.c */; };
+		EDD45BEE259A3AD500964B6F /* esp_dmx_rx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD45BEC259A2F9A00964B6F /* esp_dmx_rx.cpp */; };
 		EDE91E3F257E8AFE00AFEAE8 /* p44script.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E32257E8AFD00AFEAE8 /* p44script.cpp */; };
 		EDE91E40257E8AFE00AFEAE8 /* valueanimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E33257E8AFD00AFEAE8 /* valueanimator.cpp */; };
 		EDE91E41257E8AFE00AFEAE8 /* dcmotor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE91E39257E8AFE00AFEAE8 /* dcmotor.cpp */; };
@@ -202,6 +203,8 @@
 		ED2F6E6325880A050094D892 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		ED2F6E6425880A050094D892 /* partitions.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = partitions.csv; sourceTree = "<group>"; };
 		ED2F6E6525880A120094D892 /* Kconfig.projbuild */ = {isa = PBXFileReference; lastKnownFileType = text; path = Kconfig.projbuild; sourceTree = "<group>"; };
+		EDD45BEC259A2F9A00964B6F /* esp_dmx_rx.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = esp_dmx_rx.cpp; sourceTree = "<group>"; };
+		EDD45BED259A2F9A00964B6F /* esp_dmx_rx.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = esp_dmx_rx.hpp; sourceTree = "<group>"; };
 		EDE91E31257E623C00AFEAE8 /* p44utils_config.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = p44utils_config.hpp; sourceTree = "<group>"; };
 		EDE91E32257E8AFD00AFEAE8 /* p44script.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = p44script.cpp; sourceTree = "<group>"; };
 		EDE91E33257E8AFD00AFEAE8 /* valueanimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = valueanimator.cpp; sourceTree = "<group>"; };
@@ -445,6 +448,8 @@
 				EDE920E22582341000AFEAE8 /* pwmlight.hpp */,
 				EDE91E8C257FE59D00AFEAE8 /* esp_bt.cpp */,
 				EDE91E8D257FE59D00AFEAE8 /* esp_bt.hpp */,
+				EDD45BEC259A2F9A00964B6F /* esp_dmx_rx.cpp */,
+				EDD45BED259A2F9A00964B6F /* esp_dmx_rx.hpp */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -616,6 +621,7 @@
 				EDE91E992580E81300AFEAE8 /* p44btdmx.cpp in Sources */,
 				EDE91E74257ED6F200AFEAE8 /* viewsequencer.cpp in Sources */,
 				EDE91E76257ED6F200AFEAE8 /* torchview.cpp in Sources */,
+				EDD45BEE259A3AD500964B6F /* esp_dmx_rx.cpp in Sources */,
 				ED0AF1D5223ABAAC00E3E7FC /* random_seed.c in Sources */,
 				EDE91E43257E8AFE00AFEAE8 /* extutils.cpp in Sources */,
 				EDE91E86257F936400AFEAE8 /* iopin.cpp in Sources */,
