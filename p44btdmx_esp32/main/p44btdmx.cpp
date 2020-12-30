@@ -161,9 +161,14 @@ void P44BTDMXreceiver::processBTAdvMfgData(const string aAdvMfgData)
 void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool aNative)
 {
   FOCUSLOG("Got p44BTDMX payload: %s", binaryToHexString(aP44BTDMXData,' ').c_str());
+  // FIXME: for the iOS app, we don't want MainLoop pulled in, so only checking iBeacon lockout on ESP32 for now
+  #if ESP_PLATFORM
   MLMicroSeconds now = MainLoop::now();
   if (aNative || now-mlastNativeData>NOT_NATIVE_LOCKOUT_PERIOD) {
     if (aNative) mlastNativeData = now;
+  #else
+  if (true) {
+  #endif
     // decode from system key and verify CRC
     uint16_t crc = 0;
     string decoded;
@@ -199,7 +204,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
   // - cmd: 0..2 (address mod 3)
   //   - 0=brightness (B channel), 1 data byte
   //   - 1=HSB, 3 data bytes
-  //   - 2=pos/mode, 2 data bytes
+  //   - 2=other channel: channelindex/value, 2 data bytes
   int i = 0;
   int ln = (int)aP44BTDMXCmds.size();
   while (i<ln) {
@@ -218,13 +223,14 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
       continue;
     }
     int lightIndex = addrCmd / 3;
-    FOCUSLOG("Command for Global Light #%d (DMX: %d)", lightIndex, lightIndex*cLightBytes);
+    FOCUSLOG("Command for Global Light #%d (DMX: %d)", lightIndex, lightIndex*cLightChannels+1);
     uint8_t cmd = addrCmd - 3*lightIndex; // modulo 3
     lightIndex -= mFirstLightNumber;
     if (lightIndex>=mLights.size()) lightIndex = -1; // not one of our lights
     if (i++>=ln) return; // error, not enough data: all commands have at least one byte
     switch (cmd) {
       case 0: {
+        // set brightness (V channel)
         uint8_t b = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
           FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, b);
@@ -235,6 +241,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         break;
       }
       case 1: {
+        // set HSV at once
         if (i+3>ln) return; // error, not enough data
         uint8_t h = aP44BTDMXCmds[i++];
         uint8_t s = aP44BTDMXCmds[i++];
@@ -250,14 +257,14 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
         break;
       }
       case 2: {
+        // set other channels by index
         if (i+2>ln) return; // error, not enough data
-        uint8_t pos = aP44BTDMXCmds[i++];
-        uint8_t mode = aP44BTDMXCmds[i++];
+        uint8_t cidx = aP44BTDMXCmds[i++];
+        uint8_t value = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
-          FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, pos, mode);
+          FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, cidx, value);
           P44DMXLightPtr light = mLights[lightIndex];
-          light->setChannel(3,pos);
-          light->setChannel(4,mode);
+          light->setChannel(cidx,value);
           light->applyChannels();
         }
         break;
@@ -383,7 +390,7 @@ void P44BTDMXsender::setChannel(uint16_t aDMXChannel, uint8_t aValue)
   if (aDMXChannel>=cUniverseSize) return;
   if (FOCUSLOGGING) {
     if (mUniverse[aDMXChannel].pending!=aValue) {
-      FOCUSLOG("DMX #%u pending value changes from %u to %u", aDMXChannel, mUniverse[aDMXChannel].pending, aValue);
+      FOCUSLOG("DMX #%u pending value changes from %u to %u", aDMXChannel+1, mUniverse[aDMXChannel].pending, aValue);
     }
   }
   mUniverse[aDMXChannel].pending = aValue;
@@ -454,20 +461,19 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
     // generate updates for oldest (=most urgent) lights
     // Note: check light by light
     for (int lidx=0; lidx<cNumLights; lidx++) {
-      int loffs = lidx*cLightBytes;
+      int loffs = lidx*cLightChannels;
       // light layout: HSB: 5 bytes
       // - 0: hue
       // - 1: saturation
       // - 2: brightness
-      // - 3: position
-      // - 4: mode
+      // - 3..n: other channels
       // p44DMX delta update commands:
       // - address byte with 3*lightnumber+cmd
       // - lightnumber: 0..84 (address div 3)
       // - cmd: 0..2 (address mod 3)
       //   - 0=brightness (B channel), 1 data byte
       //   - 1=HSB, 3 data bytes
-      //   - 2=pos/mode, 2 data bytes
+      //   - 2=channelindex/value, 2 data bytes
       if ((mUniverse[loffs+0].age==maxAge || mUniverse[loffs+1].age==maxAge) && room>=4) {
         // hue or saturation needs update -> need a HSB packet
         cmds.append(1, 3*lidx + 0x01); // HSB update command
@@ -488,16 +494,17 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
         // reset age for update sent
         mUniverse[loffs+2].age = doneAge;
       }
-      // position might be sent in addition to brightness or HSB
-      if ((mUniverse[loffs+3].age==maxAge || mUniverse[loffs+4].age==maxAge) && room>=3) {
-        // mode or position needs update -> need a Pos/Mode packet
-        cmds.append(1, 3*lidx + 0x02); // Pos/Mode update command
-        cmds.append(1, mUniverse[loffs+3].current); // H
-        cmds.append(1, mUniverse[loffs+4].current); // S
-        room -= 3;
-        // reset age for update sent
-        mUniverse[loffs+3].age = doneAge;
-        mUniverse[loffs+4].age = doneAge;
+      // other channels might be sent in addition to brightness or HSB
+      for (int cidx = 3; cidx<cLightChannels; cidx++) {
+        if (mUniverse[loffs+cidx].age==maxAge && room>=3) {
+          // other channel needs update -> need a channelindex/value packet
+          cmds.append(1, 3*lidx + 0x02); // channelindex/value update command
+          cmds.append(1, cidx); // channel index
+          cmds.append(1, mUniverse[loffs+cidx].current); // value
+          room -= 3;
+          // reset age for update sent
+          mUniverse[loffs+cidx].age = doneAge;
+        }
       }
       if (room<2) break; // no point in checking further
     }

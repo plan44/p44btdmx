@@ -43,13 +43,15 @@ namespace p44 {
 
     P44BTDMXbase();
 
-    static const uint16_t cLightBytes = 5;
     string mSystemKey;
 
     uint8_t systemKeyByte(int aIndex);
     static uint16_t crc16(uint16_t aCRC16, uint8_t aByteToAdd);
 
   public:
+
+    /// number of channels per light
+    static const uint16_t cLightChannels = 8;
 
     /// set the system data obfuscation key
     /// @param aSystemKeyUserInput user-provided system key input
@@ -112,7 +114,7 @@ namespace p44 {
   {
     friend class P44BTDMXreceiver;
 
-    static const uint16_t cNumChannels = P44BTDMXreceiver::cLightBytes;
+    static const uint16_t cNumChannels = P44BTDMXreceiver::cLightChannels;
 
   protected:
 
@@ -148,8 +150,12 @@ namespace p44 {
   {
     typedef P44BTDMXbase inherited;
 
+  public:
+
     static const uint16_t cNumLights = (255-2)/3; // limited not by DMX channels, but addr/command byte (3 cmds per light)
-    static const int cUniverseSize = cLightBytes*cNumLights; // important to be NOT larger than actually monitored lights
+    static const int cUniverseSize = cLightChannels*cNumLights; // important to be NOT larger than actually monitored lights
+
+  private:
 
     typedef struct {
       uint8_t pending;

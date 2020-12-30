@@ -44,6 +44,11 @@ PWMLight::~PWMLight()
 {
 }
 
+// light layout: HSB
+// 0: channel hue
+// 1: channel saturation
+// 2: channel brightness
+
 
 void PWMLight::applyChannels()
 {
