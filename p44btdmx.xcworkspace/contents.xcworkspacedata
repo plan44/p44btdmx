@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:p44btdmx_esp32/p44btdmx_controller.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:p44btdmx_iosapp/p44btdmx.xcodeproj">
+   </FileRef>
+</Workspace>
