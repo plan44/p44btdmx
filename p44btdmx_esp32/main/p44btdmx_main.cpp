@@ -27,11 +27,23 @@
 
 // MARK: - Basic application configuration
 
+// quick overrides for development (because changing in actual config triggers full rebuild of everything)
+#define QUICK_OVERRIDE 1
+#if QUICK_OVERRIDE
+  #define CONFIG_DEFAULT_LOG_LEVEL 5
+  #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
+  #define CONFIG_P44_WIFI_SUPPORT 0
+  #define CONFIG_P44_DMX_RX 1 // FIXME: for now assume DMX receiver enabled
+  #define CONFIG_P44_BTDMX_SENDER 1 // FIXME: for now default to BTDMX sending via bluetooth
+  #define CONFIG_P44_BTDMX_RECEIVER 0 // FIXME: for now not receiving
+  #define CONFIG_P44_BTDMX_LIGHTS 0 // FIXME: no lights
+#endif
+
 #ifndef CONFIG_DEFAULT_LOG_LEVEL
   #define CONFIG_DEFAULT_LOG_LEVEL 5
 #endif
 #ifndef CONFIG_REFRESH_UNIVERSE
-  #define CONFIG_REFRESH_UNIVERSE false // FIXME: debug only
+  #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
 #endif
 
 #if CONFIG_P44_WIFI_SUPPORT
@@ -41,16 +53,16 @@
 #endif
 
 #ifndef CONFIG_P44_DMX_RX
-  #define CONFIG_P44_DMX_RX 1 // FIXME: for now assume DMX receiver enabled
+  #define CONFIG_P44_DMX_RX 0
 #endif
 #ifndef CONFIG_P44_BTDMX_SENDER
-  #define CONFIG_P44_BTDMX_SENDER 1 // FIXME: for now default to BTDMX sending via bluetooth
+  #define CONFIG_P44_BTDMX_SENDER 0
 #endif
 #ifndef CONFIG_P44_BTDMX_RECEIVER
-  #define CONFIG_P44_BTDMX_RECEIVER 0 // FIXME: for now not receiving
+  #define CONFIG_P44_BTDMX_RECEIVER 1
 #endif
 #ifndef CONFIG_P44_BTDMX_LIGHTS
-  #define CONFIG_P44_BTDMX_LIGHTS 0 // FIXME: no lights
+  #define CONFIG_P44_BTDMX_LIGHTS 1
 #endif
 
 
@@ -144,7 +156,7 @@ public:
     #if CONFIG_P44_BTDMX_SENDER
     // P44BTDMX sender object
     dmxSender = P44BTDMXsenderPtr(new P44BTDMXsender);
-    dmxSender->setRefreshUniverse(CONFIG_REFRESH_UNIVERSE);
+    dmxSender->setRefreshUniverse(CONFIG_P44BTDMX_REFRESH_UNIVERSE);
     dmxSender->setInitialRepeatCount(3);
     #ifdef CONFIG_P44BTDMX_SYSTEMKEY
     string systemkey = CONFIG_P44BTDMX_SYSTEMKEY;

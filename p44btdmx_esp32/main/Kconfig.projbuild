@@ -1,10 +1,11 @@
 menu "P44BTDMX-Controller Configuration"
 
-
-config P44_WIFI_SUPPORT
-    bool "Enable Wifi in p44utils based app"
+config DEFAULT_LOG_LEVEL
+    int "Log Level"
+    default 5
     help
-        This enables using Wifi at all in p44utils based app
+      Default log level (do not set >5 for normal operation)
+
 
 config P44BTDMX_SYSTEMKEY
     string "P44BTDMX system key"
@@ -15,10 +16,43 @@ config P44BTDMX_SYSTEMKEY
         or just a text <64 bytes for a text key
         or empty string to use the default key (basically: no key)
 
-config P44BTDMX_PWMLIGHT
-    bool "Enables PWM light as light #0"
+config P44_DMX_RX
+    bool "DMX512 receiver"
+    default n
     help
-        This enables PWM R,G,B light as light #0
+        Include DMX512 serial signal receiver
+
+config P44_BTDMX_SENDER
+    bool "Send P44BTDMX via BT"
+    default n
+    help
+        This enables sending P44BTDMX via BT advertisements
+
+config P44BTDMX_REFRESH_UNIVERSE
+    depends on P44_BTDMX_SENDER
+    bool "constantly re-send entire p44BTDMX universe values"
+    default y
+    help
+        This enables sending not only changes, but also periodically refreshing all values in the universe (whenever no changes are pending)
+
+config P44_BTDMX_LIGHTS
+    bool "Build as a light controller"
+    default y
+    help
+        Build light controller for PWM and WS281x LED chain lights
+
+config P44BTDMX_PWMLIGHT
+    depends on P44_BTDMX_LIGHTS
+    bool "Enables PWM light as light #0"
+    default n
+    help
+        This enables PWM R,G,B light as light #0 (instead of WS281x LED chain)
+
+
+config P44_WIFI_SUPPORT
+    bool "Enable Wifi in p44utils based app"
+    help
+        This enables using Wifi at all in p44utils based app
 
 choice ESP_WIFI_MODE
     depends on P44_WIFI_SUPPORT
@@ -59,4 +93,5 @@ config MAX_STA_CONN
     default 4
     help
 	Max number of the STA connects to AP.
+
 endmenu
