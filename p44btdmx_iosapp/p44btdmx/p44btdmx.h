@@ -20,6 +20,8 @@
 - (void)reset;
 - (void)setChannel:(int)aChannel toValue:(UInt8)aValue;
 - (UInt8)getChannel:(int)aChannel;
+- (void)setChannelsHex:(NSString*)aChannelsHex;
+- (NSString *)getChannelsHex;
 - (NSData *)iBeaconAdvertisementData;
 
 @end // NSObject

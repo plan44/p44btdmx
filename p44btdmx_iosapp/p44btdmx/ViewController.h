@@ -17,9 +17,11 @@
 @property (weak, nonatomic) IBOutlet UISlider *brightnessSlider;
 
 @property (weak, nonatomic) IBOutlet UISlider *positionSlider;
+@property (weak, nonatomic) IBOutlet UISlider *sizeSlider;
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *modeSelect;
-@property (weak, nonatomic) IBOutlet UISlider *modeParamSlider;
+@property (weak, nonatomic) IBOutlet UISlider *speedSlider;
+@property (weak, nonatomic) IBOutlet UISlider *gradientSlider;
 
 - (IBAction)lightNo10sChanged:(id)sender;
 - (IBAction)lightNo1sChanged:(id)sender;
@@ -29,11 +31,15 @@
 - (IBAction)brightnessChanged:(id)sender;
 
 - (IBAction)positionChanged:(id)sender;
+- (IBAction)sizeChanged:(id)sender;
 
 - (IBAction)modeChanged:(id)sender;
+- (IBAction)speedChanged:(id)sender;
+- (IBAction)gradientChanged:(id)sender;
 
 - (IBAction)stopBroadcastTapped:(id)sender;
-
+- (IBAction)resetUniverse:(id)sender;
+- (IBAction)clearUniverse:(id)sender;
 
 - (IBAction)endSettings:(UIStoryboardSegue*)unwindSegue;
 

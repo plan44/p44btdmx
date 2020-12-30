@@ -10,6 +10,9 @@
 #import "p44btdmx.h"
 #import "AppDelegate.h"
 
+#define LIGHT_CHANNELS 8
+#define NUM_LIGHTS 64
+
 @interface ViewController ()
 {
   int mCurrentLightNo;
@@ -56,13 +59,15 @@
 {
   P44BTDMXManager *mgr = [AppDelegate sharedAppDelegate].p44BTDMXManager;
   [self updateLightNoFromControls];
-  int lightBase = mCurrentLightNo*5;
+  int lightBase = mCurrentLightNo*LIGHT_CHANNELS;
   self.hueSlider.value = [mgr.p44BTDMX getChannel:lightBase+0];
   self.saturationSlider.value = [mgr.p44BTDMX getChannel:lightBase+1];
   self.brightnessSlider.value = [mgr.p44BTDMX getChannel:lightBase+2];
   self.positionSlider.value = [mgr.p44BTDMX getChannel:lightBase+3];
-  self.modeSelect.selectedSegmentIndex = ([mgr.p44BTDMX getChannel:lightBase+4]>>4) & 0xF;
-  self.modeParamSlider.value = [mgr.p44BTDMX getChannel:lightBase+4] & 0xF;
+  self.sizeSlider.value = [mgr.p44BTDMX getChannel:lightBase+4];
+  self.speedSlider.value = [mgr.p44BTDMX getChannel:lightBase+5];
+  self.gradientSlider.value = [mgr.p44BTDMX getChannel:lightBase+6];
+  self.modeSelect.selectedSegmentIndex = [mgr.p44BTDMX getChannel:lightBase+7];
 }
 
 
@@ -89,33 +94,73 @@
 - (IBAction)hueChanged:(id)sender
 {
   [self restartBroadcast];
-  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*5+0 toValue:self.hueSlider.value];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+0 toValue:self.hueSlider.value];
 }
 
 - (IBAction)saturationChanged:(id)sender
 {
   [self restartBroadcast];
-  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*5+1 toValue:self.saturationSlider.value];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+1 toValue:self.saturationSlider.value];
 }
 
 - (IBAction)brightnessChanged:(id)sender
 {
   [self restartBroadcast];
-  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*5+2 toValue:self.brightnessSlider.value];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+2 toValue:self.brightnessSlider.value];
 }
 
 
 - (IBAction)positionChanged:(id)sender
 {
   [self restartBroadcast];
-  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*5+3 toValue:self.positionSlider.value];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+3 toValue:self.positionSlider.value];
+}
+
+- (IBAction)sizeChanged:(id)sender
+{
+  [self restartBroadcast];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+4 toValue:self.sizeSlider.value];
+}
+
+- (IBAction)speedChanged:(id)sender
+{
+  [self restartBroadcast];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+5 toValue:self.speedSlider.value];
+}
+
+- (IBAction)gradientChanged:(id)sender
+{
+  [self restartBroadcast];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+6 toValue:self.gradientSlider.value];
 }
 
 
 - (IBAction)modeChanged:(id)sender
 {
   [self restartBroadcast];
-  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*5+4 toValue:(self.modeSelect.selectedSegmentIndex<<4)+((int)self.modeParamSlider.value&0xF)];
+  [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:mCurrentLightNo*LIGHT_CHANNELS+7 toValue:self.modeSelect.selectedSegmentIndex];
+}
+
+
+- (IBAction)resetUniverse:(id)sender
+{
+  // reset brightness and mode only: all off, but detail settings undisturbed
+  for (int light=0; light<NUM_LIGHTS; light++) {
+    [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:light*LIGHT_CHANNELS+2 toValue:0]; // reset brightness
+    [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:light*LIGHT_CHANNELS+7 toValue:0]; // reset mode
+  }
+  [self updateChannels];
+}
+
+
+- (IBAction)clearUniverse:(id)sender
+{
+  for (int light=0; light<NUM_LIGHTS; light++) {
+    for (int channel=0; channel<LIGHT_CHANNELS; channel++) {
+      [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:light*LIGHT_CHANNELS+channel toValue:0];
+    }
+  }
+  [self updateChannels];
 }
 
 
@@ -133,6 +178,7 @@
   [[NSUserDefaults standardUserDefaults] setValue:settings.systemKeyTextfield.text forKey:@"p44BtDMXsystemKey"];
   [[NSUserDefaults standardUserDefaults] setBool:settings.refreshUniverseSwitch.on forKey:@"p44BtDMXrefreshUniverse"];
   [[AppDelegate sharedAppDelegate] readConfig];
+  [self updateChannels];
 }
 
 

@@ -7,6 +7,7 @@
 
 #include "p44btdmx.h"
 #include "p44btdmx.hpp"
+#include "utils.hpp"
 
 using namespace p44;
 
@@ -64,9 +65,34 @@ using namespace p44;
 
 
 
+- (void)setChannelsHex:(NSString*)aChannelsHex
+{
+  string channels = hexToBinaryString([aChannelsHex cStringUsingEncoding:NSUTF8StringEncoding], false, 512);
+  for (int i=0; i<P44BTDMXsender::cUniverseSize; i++) {
+    if (i<channels.size()) {
+      dmxSender->setChannel(i, (uint8_t)channels[i]);
+    }
+    else {
+      dmxSender->setChannel(i, 0);
+    }
+  }
+}
+
+
+- (NSString *)getChannelsHex
+{
+  string channels;
+  for (int i=0; i<P44BTDMXsender::cUniverseSize; i++) {
+    channels.append(1, dmxSender->getChannel(i));
+  }
+  return [NSString stringWithCString:binaryToHexString(channels).c_str() encoding:NSUTF8StringEncoding];
+}
+
+
+
 - (NSData *)iBeaconAdvertisementData
 {
-  std::string data = dmxSender->generateP44BTDMXpayload(21);
+  string data = dmxSender->generateP44BTDMXpayload(21);
   return [NSData dataWithBytes:data.c_str() length:data.size()];
 }
 

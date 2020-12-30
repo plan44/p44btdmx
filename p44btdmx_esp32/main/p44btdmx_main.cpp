@@ -36,9 +36,9 @@
   #define TEXT 3
   #define DMX 4
   // current device type
-  #define DEVICE MASK
+  #define DEVICE DMX
   // common settings
-  #define CONFIG_DEFAULT_LOG_LEVEL 6
+  #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
   // settings for different device types
   #if DEVICE==MASK
@@ -60,6 +60,7 @@
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 0
   #elif DEVICE==DMX
+    //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
     #define CONFIG_P44_DMX_RX 1
     #define CONFIG_P44_BTDMX_SENDER 1
@@ -73,7 +74,7 @@
 #ifndef CONFIG_DEFAULT_LOG_LEVEL
   #define CONFIG_DEFAULT_LOG_LEVEL 5
 #endif
-#ifndef CONFIG_REFRESH_UNIVERSE
+#ifndef CONFIG_P44BTDMX_REFRESH_UNIVERSE
   #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
 #endif
 

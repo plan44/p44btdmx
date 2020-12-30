@@ -23,6 +23,7 @@
 // convenience method to grab the typed AppDelegate
 + (AppDelegate *)sharedAppDelegate;
 - (void)readConfig;
+- (void)saveState;
 
 @end
 

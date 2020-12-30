@@ -462,7 +462,7 @@ string P44BTDMXsender::generateP44DMXcmds(int aMaxBytes)
     // Note: check light by light
     for (int lidx=0; lidx<cNumLights; lidx++) {
       int loffs = lidx*cLightChannels;
-      // light layout: HSB: 5 bytes
+      // light layout: HSB + n extra channels
       // - 0: hue
       // - 1: saturation
       // - 2: brightness

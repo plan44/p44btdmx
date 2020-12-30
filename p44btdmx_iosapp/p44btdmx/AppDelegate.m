@@ -26,6 +26,9 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults: @{
       @"p44BtDMXsystemKey": @""
     }];
+    [[NSUserDefaults standardUserDefaults] registerDefaults: @{
+      @"p44BtDMXchannels": @""
+    }];
     // init BT
     mCentralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     mPeripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
@@ -153,17 +156,48 @@
 {
   [mP44BTDMXManager.p44BTDMX setSystemKey:[[NSUserDefaults standardUserDefaults] objectForKey:@"p44BtDMXsystemKey"]];
   [mP44BTDMXManager.p44BTDMX setRefreshUniverse:[[NSUserDefaults standardUserDefaults] boolForKey:@"p44BtDMXrefreshUniverse"]];
-
 }
 
+
+- (void)readStateAndConfig
+{
+  [self readConfig];
+  [mP44BTDMXManager.p44BTDMX setChannelsHex:[[NSUserDefaults standardUserDefaults] stringForKey:@"p44BtDMXchannels"]];
+}
+
+
+- (void)saveState
+{
+  [[NSUserDefaults standardUserDefaults] setValue:[mP44BTDMXManager.p44BTDMX getChannelsHex] forKey:@"p44BtDMXchannels"];
+}
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   mP44BTDMXManager = [[P44BTDMXManager alloc] init];
-  [self readConfig];
+  [self readStateAndConfig];
   // set system key from userdefaults
   return YES;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  [self saveState];
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+  [self saveState];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+  [self saveState];
+}
+
+- (void)application:(UIApplication *)application willEncodeRestorableStateWithCoder:(NSCoder *)coder
+{
+  [self saveState];
 }
 
 

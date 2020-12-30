@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak, nonatomic) IBOutlet UITextField *systemKeyTextfield;
 @property (weak, nonatomic) IBOutlet UISwitch *refreshUniverseSwitch;
+- (IBAction)clearAllChannels:(id)sender;
 
 @end
 
