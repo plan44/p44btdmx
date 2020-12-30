@@ -30,13 +30,44 @@
 // quick overrides for development (because changing in actual config triggers full rebuild of everything)
 #define QUICK_OVERRIDE 1
 #if QUICK_OVERRIDE
-  #define CONFIG_DEFAULT_LOG_LEVEL 5
-  #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
+  // device types
+  #define AUTO 1
+  #define MASK 2
+  #define TEXT 3
+  #define DMX 4
+  // current device type
+  #define DEVICE MASK
+  // common settings
+  #define CONFIG_DEFAULT_LOG_LEVEL 6
   #define CONFIG_P44_WIFI_SUPPORT 0
-  #define CONFIG_P44_DMX_RX 1 // FIXME: for now assume DMX receiver enabled
-  #define CONFIG_P44_BTDMX_SENDER 1 // FIXME: for now default to BTDMX sending via bluetooth
-  #define CONFIG_P44_BTDMX_RECEIVER 0 // FIXME: for now not receiving
-  #define CONFIG_P44_BTDMX_LIGHTS 0 // FIXME: no lights
+  // settings for different device types
+  #if DEVICE==MASK
+    #define CONFIG_P44_DMX_RX 0
+    #define CONFIG_P44_BTDMX_SENDER 0
+    #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_BTDMX_LIGHTS 1
+    #define CONFIG_P44BTDMX_PWMLIGHT 1
+  #elif DEVICE==AUTO
+    #define CONFIG_P44_DMX_RX 0
+    #define CONFIG_P44_BTDMX_SENDER 0
+    #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_BTDMX_LIGHTS 1
+    #define CONFIG_P44BTDMX_PWMLIGHT 0
+  #elif DEVICE==TEXT
+    #define CONFIG_P44_DMX_RX 0
+    #define CONFIG_P44_BTDMX_SENDER 0
+    #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_BTDMX_LIGHTS 1
+    #define CONFIG_P44BTDMX_PWMLIGHT 0
+  #elif DEVICE==DMX
+    #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
+    #define CONFIG_P44_DMX_RX 1
+    #define CONFIG_P44_BTDMX_SENDER 1
+    #define CONFIG_P44_BTDMX_RECEIVER 0
+    #define CONFIG_P44_BTDMX_LIGHTS 0
+  #else
+    #error "Unknown device"
+  #endif
 #endif
 
 #ifndef CONFIG_DEFAULT_LOG_LEVEL
@@ -260,7 +291,7 @@ public:
       // fetch possible manufacturer specific data from advertisement
       const uint8_t* adMfgData;
       uint8_t adMfgDataSz;
-      if (BtAdvertisementReceiver::findADStruct((uint8_t *)aAdvData.c_str(), 0xFF, adMfgData, adMfgDataSz)) {
+      if (BtAdvertisements::findADStruct((uint8_t *)aAdvData.c_str(), 0xFF, adMfgData, adMfgDataSz)) {
         // let dmxreceiver handle it
         dmxReceiver->processBTAdvMfgData(string((const char*)adMfgData, adMfgDataSz));
       }
