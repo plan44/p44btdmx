@@ -36,12 +36,13 @@
   #define TEXT 3
   #define DMX 4
   // current device type
-  #define DEVICE DMX
+  #define DEVICE MASK
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
   // settings for different device types
   #if DEVICE==MASK
+    //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1

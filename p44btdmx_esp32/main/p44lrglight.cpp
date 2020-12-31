@@ -24,7 +24,7 @@
 #define ALWAYS_DEBUG 0
 // - set FOCUSLOGLEVEL to non-zero log level (usually, 5,6, or 7==LOG_DEBUG) to get focus (extensive logging) for this file
 //   Note: must be before including "logger.hpp" (or anything that includes "logger.hpp")
-#define FOCUSLOGLEVEL 7
+#define FOCUSLOGLEVEL 0
 
 #include "p44lrglight.hpp"
 
@@ -117,6 +117,7 @@ void P44lrgLight::applyChannels()
         }
       }
       OLOG(LOG_INFO,"Mode and/or color change");
+      OLOG(LOG_INFO,"- new view hierarchy: %s", lightView->getParent()->viewStatus()->json_c_str());
     }
     else {
       // just color
@@ -133,8 +134,11 @@ void P44lrgLight::applyChannels()
   if (
     (channels[4].pending!=channels[4].current) // size
   ) {
-    OLOG(LOG_INFO,"Size change");
-    lightView->setRelativeExtent((double)channels[4].pending/255);
+    // to make sure light works out of the box, mode 0 actively suppresses size changes!
+    if (mode!=0) {
+      OLOG(LOG_INFO,"Size change");
+      lightView->setRelativeExtent((double)channels[4].pending/255);
+    }
   }
   if (
     (channels[6].pending!=channels[6].current) // mode dependent gradient

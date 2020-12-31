@@ -164,11 +164,13 @@ void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool a
   // FIXME: for the iOS app, we don't want MainLoop pulled in, so only checking iBeacon lockout on ESP32 for now
   #if ESP_PLATFORM
   MLMicroSeconds now = MainLoop::now();
-  if (aNative || now-mlastNativeData>NOT_NATIVE_LOCKOUT_PERIOD) {
-    if (aNative) mlastNativeData = now;
+  if (aNative || now-mlastNativeData>NOT_NATIVE_LOCKOUT_PERIOD)
   #else
-  if (true) {
+  MLMicroSeconds now = 0;
+  if (true)
   #endif
+  {
+    if (aNative) mlastNativeData = now;
     // decode from system key and verify CRC
     uint16_t crc = 0;
     string decoded;
