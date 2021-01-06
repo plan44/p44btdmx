@@ -62,7 +62,7 @@ BtAdvertisements::~BtAdvertisements()
 
 
 static esp_ble_scan_params_t ble_scan_params = {
-  .scan_type              = BLE_SCAN_TYPE_ACTIVE,
+  .scan_type              = BLE_SCAN_TYPE_PASSIVE, // we don't send scan requests
   .own_addr_type          = BLE_ADDR_TYPE_PUBLIC,
   .scan_filter_policy     = BLE_SCAN_FILTER_ALLOW_ALL,
   .scan_interval          = 0x20, // 0x10 = 10mS (scan interval = N*0.625mS), can be 0x0004..0x4000
