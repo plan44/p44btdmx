@@ -36,7 +36,8 @@ namespace p44 {
   {
     typedef P44DMXLight inherited;
 
-    LightSpotViewPtr lightView;
+    LightSpotViewPtr mLightView;
+    ValueAnimatorPtr mAnimation;
 
   public:
     P44lrgLight(P44ViewPtr aRootView, PixelRect aFrame);

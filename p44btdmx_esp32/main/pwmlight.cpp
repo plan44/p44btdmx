@@ -36,7 +36,8 @@ using namespace p44;
 PWMLight::PWMLight(AnalogIoPtr aRedOut, AnalogIoPtr aGreenOut, AnalogIoPtr aBlueOut) :
   mRedOut(aRedOut),
   mGreenOut(aGreenOut),
-  mBlueOut(aBlueOut)
+  mBlueOut(aBlueOut),
+  mModulator(1)
 {
 }
 
@@ -48,10 +49,16 @@ PWMLight::~PWMLight()
 // 0: channel hue
 // 1: channel saturation
 // 2: channel brightness
+// 3,4: unused
+// 5: speed
+// 6: pulse amplitude
+// 7: mode (4=pulsing, all others steady)
 
 
 void PWMLight::applyChannels()
 {
+  uint8_t mode = channels[7].pending;
+  bool animationChanged = false;
   if (
     (channels[0].pending!=channels[0].current) ||
     (channels[1].pending!=channels[1].current) ||
@@ -60,19 +67,70 @@ void PWMLight::applyChannels()
     // need updating RGB outputs
     // - convert to RGB
     FOCUSLOG("Setting PWM light to H=%d, S=%d, V=%d", channels[0].pending, channels[1].pending, channels[2].pending);
-    Row3 HSV;
-    HSV[0] = (double)channels[0].pending/255*360;
-    HSV[1] = (double)channels[1].pending/255;
-    HSV[2] = (double)channels[2].pending/255;
-    FOCUSLOG("Setting PWM light to H=%.2f, S=%.2f, V=%.2f", HSV[0], HSV[1], HSV[2]);
-    Row3 RGB;
-    HSVtoRGB(HSV, RGB);
-    // - set PWM outputs
-    FOCUSLOG("Setting PWM light to R=%.2f, G=%.2f, B=%.2f", RGB[0], RGB[1], RGB[2]);
-    mRedOut->setValue(RGB[0]*100);
-    mGreenOut->setValue(RGB[1]*100);
-    mBlueOut->setValue(RGB[2]*100);
-    // confirm apply
-    inherited::applyChannels();
+    updatePWM();
   }
+  // speed
+  if (channels[5].pending!=channels[5].current) {
+    animationChanged = true;
+  }
+  // amplitude
+  if (channels[6].pending!=channels[6].current) {
+    animationChanged = true;
+  }
+  // mode
+  if (mode!=channels[7].current) {
+    mAnimator.reset();
+    switch(mode) {
+      case 4:
+        // pulse animation
+        mAnimator = ValueAnimatorPtr(new ValueAnimator(
+          boost::bind(&PWMLight::modulate, this, _1),
+          true // self timed
+        ));
+        mAnimator->function("easeinout");
+        animationChanged = true;
+        break;
+      default:
+        mModulator = 1;
+        break;
+    }
+  }
+  // (re)start animation
+  if (mAnimator && animationChanged) {
+    switch (mode) {
+      case 4:
+        // intensity 0..255, changing from current value to currentvalue +/- gradient channel value
+        mAnimator->repeat(true, 0)->from(channels[2].pending)->animate(channels[2].pending+channels[6].pending*2-255, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
+        break;
+      default:
+        break;
+    }
+  }
+  // confirm apply
+  inherited::applyChannels();
+}
+
+
+void PWMLight::updatePWM()
+{
+  Row3 HSV;
+  HSV[0] = (double)channels[0].pending/255*360;
+  HSV[1] = (double)channels[1].pending/255;
+  HSV[2] = (double)channels[2].pending/255*mModulator;
+  FOCUSLOG("Setting PWM light to H=%.2f, S=%.2f, V=%.2f", HSV[0], HSV[1], HSV[2]);
+  Row3 RGB;
+  HSVtoRGB(HSV, RGB);
+  // - set PWM outputs
+  FOCUSLOG("Setting PWM light to R=%.2f, G=%.2f, B=%.2f", RGB[0], RGB[1], RGB[2]);
+  mRedOut->setValue(RGB[0]*100);
+  mGreenOut->setValue(RGB[1]*100);
+  mBlueOut->setValue(RGB[2]*100);
+}
+
+
+void PWMLight::modulate(double aValue)
+{
+  // input is 0..255
+  mModulator = aValue/255;
+  updatePWM();
 }

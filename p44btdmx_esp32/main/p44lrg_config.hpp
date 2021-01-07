@@ -52,7 +52,7 @@
   #ifdef CONFIG_P44LRGRAPHICS_ENABLE_ANIMATION
     #define ENABLE_ANIMATION CONFIG_P44LRGRAPHICS_ENABLE_ANIMATION
   #else
-    #define ENABLE_ANIMATION 0 // not by default because it pulls in ValueAnimator
+    #define ENABLE_ANIMATION 1 // not by default because it pulls in ValueAnimator
   #endif
 #endif
 

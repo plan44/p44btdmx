@@ -31,22 +31,22 @@
 
 using namespace p44;
 
-// MARK: - PWM RGB light
+// MARK: - ledchain "feature" Lightsegment
 
 P44lrgLight::P44lrgLight(P44ViewPtr aRootView, PixelRect aFrame)
 {
   FOCUSLOG("P44lrgLight created on mainloop@%p", &MainLoop::currentMainLoop());
-  lightView = LightSpotViewPtr(new LightSpotView);
-  lightView->setZOrder(mLocalLightNumber);
-  lightView->setFrame(aFrame);
-  lightView->setFullFrameContent();
-  lightView->setForegroundColor(black);
-  lightView->setBackgroundColor(transparent);
-  lightView->setRelativeContentOrigin(0,0,true); // center
-  lightView->setRelativeExtent(1); // full frame
-  lightView->setLabel(string_format("P44lrgLight@%p",this));
+  mLightView = LightSpotViewPtr(new LightSpotView);
+  mLightView->setZOrder(mLocalLightNumber);
+  mLightView->setFrame(aFrame);
+  mLightView->setFullFrameContent();
+  mLightView->setForegroundColor(black);
+  mLightView->setBackgroundColor(transparent);
+  mLightView->setRelativeContentOrigin(0,0,true); // center
+  mLightView->setRelativeExtent(1); // full frame
+  mLightView->setLabel(string_format("P44lrgLight@%p",this));
   // add to root view
-  aRootView->addSubView(lightView);
+  aRootView->addSubView(mLightView);
   OLOG(LOG_INFO, "view hierarchy: %s", aRootView->viewStatus()->json_c_str());
 }
 
@@ -68,6 +68,7 @@ P44lrgLight::~P44lrgLight()
 void P44lrgLight::applyChannels()
 {
   uint8_t mode = channels[7].pending;
+  bool animationChanged = false;
   // - convert HSV to Pixel
   PixelColor col = hsbToPixel(
     (double)channels[0].pending/255*360,
@@ -85,51 +86,64 @@ void P44lrgLight::applyChannels()
     // need updating RGB outputs
     if (channels[7].pending!=channels[7].current) {
       // mode change, including color
+      mLightView->stopAnimations();
+      mAnimation.reset();
       switch(mode) {
         default:
         case 0: {
           // full size light with hard edges
-          lightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
-          lightView->setRelativeExtent(2);
-          lightView->setWrapMode(P44View::clipXY);
+          mLightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
+          mLightView->setRelativeExtent(2);
+          mLightView->setWrapMode(P44View::clipXY);
           break;
         }
         case 1: {
           // sizable light with hard edges
-          lightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
-          lightView->setWrapMode(P44View::clipXY);
-          lightView->setRelativeExtent((double)channels[4].pending/255);
+          mLightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
+          mLightView->setWrapMode(P44View::clipXY);
+          mLightView->setRelativeExtent((double)channels[4].pending/255);
           break;
         }
         case 2: {
           // sizable with tunable soft edge
-          lightView->setColoringParameters(col, (double)channels[6].pending/64-2, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
-          lightView->setWrapMode(P44View::clipXY);
-          lightView->setRelativeExtent((double)channels[4].pending/255);
+          mLightView->setColoringParameters(col, (double)channels[6].pending/64-2, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
+          mLightView->setWrapMode(P44View::clipXY);
+          mLightView->setRelativeExtent((double)channels[4].pending/255);
           break;
         }
         case 3: {
           // sizable with tunable color gradient
-          lightView->setColoringParameters(col, 0, gradient_none, (double)channels[6].pending/64-2, gradient_curve_lin+gradient_repeat_oscillating, 0, gradient_none, false);
-          lightView->setWrapMode(P44View::clipXY);
-          lightView->setRelativeExtent((double)channels[4].pending/255);
+          mLightView->setColoringParameters(col, 0, gradient_none, (double)channels[6].pending/64-2, gradient_curve_lin+gradient_repeat_oscillating, 0, gradient_none, false);
+          mLightView->setWrapMode(P44View::clipXY);
+          mLightView->setRelativeExtent((double)channels[4].pending/255);
+          break;
+        }
+        case 4: {
+          // pulsing with fixed soft edge, gradient and speed determine amplitude and interval
+          mLightView->setColoringParameters(col, -0.9, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
+          mLightView->setWrapMode(P44View::clipXY);
+          mLightView->setRelativeExtent((double)channels[4].pending/255);
+          // install new animation
+          mAnimation = mLightView->animatorFor("alpha");
+          mAnimation->function("easeinout");
+          animationChanged = true;
           break;
         }
       }
       OLOG(LOG_INFO,"Mode and/or color change");
-      OLOG(LOG_INFO,"- new view hierarchy: %s", lightView->getParent()->viewStatus()->json_c_str());
+      OLOG(LOG_INFO,"- new view hierarchy: %s", mLightView->getParent()->viewStatus()->json_c_str());
     }
     else {
       // just color
       OLOG(LOG_INFO,"Color only change");
-      lightView->setForegroundColor(col);
+      mLightView->setForegroundColor(col);
     }
   }
   if (
     (channels[3].pending!=channels[3].current) // position
   ) {
     OLOG(LOG_INFO,"Position change");
-    lightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
+    mLightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
   }
   if (
     (channels[4].pending!=channels[4].current) // size
@@ -137,30 +151,51 @@ void P44lrgLight::applyChannels()
     // to make sure light works out of the box, mode 0 actively suppresses size changes!
     if (mode!=0) {
       OLOG(LOG_INFO,"Size change");
-      lightView->setRelativeExtent((double)channels[4].pending/255);
+      mLightView->setRelativeExtent((double)channels[4].pending/255);
     }
   }
+  // Speed
+  if (
+    (channels[5].pending!=channels[5].current) // (animation) speed change
+  ) {
+    animationChanged = true;
+  }
+  // Gradient/Effect param
   if (
     (channels[6].pending!=channels[6].current) // mode dependent gradient
   ) {
-    OLOG(LOG_INFO,"Gradient change");
+    OLOG(LOG_INFO,"Feature param / Gradient change");
     switch(mode) {
       case 2: {
         // sizable soft edged
-        lightView->setColoringParameters(col, (double)channels[6].pending/64-2, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
+        mLightView->setColoringParameters(col, (double)channels[6].pending/64-2, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
         break;
       }
       case 3: {
         // sizable with tunable color gradient
-        lightView->setColoringParameters(col, 0, gradient_none, (double)channels[6].pending/64-2, gradient_curve_lin+gradient_repeat_oscillating, 0, gradient_none, false);
+        mLightView->setColoringParameters(col, 0, gradient_none, (double)channels[6].pending/64-2, gradient_curve_lin+gradient_repeat_oscillating, 0, gradient_none, false);
         break;
       }
-      default: break; // NOP
+      default:
+        // assume related to animation
+        animationChanged = true;
+        break;
     }
   }
-  // request update
+  // (re)start animation
+  if (mAnimation && animationChanged) {
+    switch (mode) {
+      case 4:
+        // intensity 0..255, changing from current value to currentvalue +/- gradient channel value
+        mAnimation->repeat(true, 0)->from(channels[2].pending)->animate(channels[2].pending+channels[6].pending*2-255, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
+        break;
+      default:
+        break;
+    }
+  }
+  // request LED update
   FOCUSLOG("will request update, mainloop@%p", &MainLoop::currentMainLoop());
-  lightView->requestUpdateIfNeeded();
+  mLightView->requestUpdateIfNeeded();
   FOCUSLOG("did request update");
   // confirm apply
   inherited::applyChannels();

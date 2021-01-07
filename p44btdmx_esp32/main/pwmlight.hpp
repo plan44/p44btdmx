@@ -26,6 +26,7 @@
 #include "p44utils_common.hpp"
 #include "p44btdmx.hpp"
 #include "analogio.hpp"
+#include "valueanimator.hpp"
 
 
 using namespace std;
@@ -40,6 +41,9 @@ namespace p44 {
     AnalogIoPtr mGreenOut;
     AnalogIoPtr mBlueOut;
 
+    ValueAnimatorPtr mAnimator;
+    double mModulator;
+
   public:
     PWMLight(AnalogIoPtr aRedOut, AnalogIoPtr aGreenOut, AnalogIoPtr aBlueOut);
     virtual ~PWMLight();
@@ -47,6 +51,10 @@ namespace p44 {
     /// apply channel values
     /// @note base class just confirms apply by updating "current" field from "pending" in internal channel data
     virtual void applyChannels() P44_OVERRIDE;
+
+  private:
+    void updatePWM();
+    void modulate(double aValue);
 
   };
 
