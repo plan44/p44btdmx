@@ -37,7 +37,7 @@
   #define TEXT 3
   #define DMX 4
   // current device type
-  #define DEVICE TEXT
+  #define DEVICE MASK
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
