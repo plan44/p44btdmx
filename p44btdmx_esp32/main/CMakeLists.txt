@@ -5,7 +5,8 @@ set(srcs
   "esp_dmx_rx.cpp"
   "p44btdmx.cpp"
   "pwmlight.cpp"
-  "p44lrglight.cpp")
+  "p44lrglight.cpp"
+  "p44lrgtextlight.cpp")
 
 set(incl
   ".")

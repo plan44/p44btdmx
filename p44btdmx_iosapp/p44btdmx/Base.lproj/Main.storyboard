@@ -145,6 +145,10 @@
                                     <segment title="2"/>
                                     <segment title="3"/>
                                     <segment title="4"/>
+                                    <segment title="5"/>
+                                    <segment title="6"/>
+                                    <segment title="7"/>
+                                    <segment title="8"/>
                                 </segments>
                                 <connections>
                                     <action selector="modeChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="xRN-SH-IE2"/>

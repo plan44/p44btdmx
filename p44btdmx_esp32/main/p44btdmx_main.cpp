@@ -18,6 +18,7 @@
 #include "p44btdmx.hpp"
 #include "pwmlight.hpp"
 #include "p44lrglight.hpp"
+#include "p44lrgtextlight.hpp"
 
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
@@ -36,7 +37,7 @@
   #define TEXT 3
   #define DMX 4
   // current device type
-  #define DEVICE MASK
+  #define DEVICE TEXT
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
@@ -55,11 +56,17 @@
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 0
   #elif DEVICE==TEXT
+    //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
     #define CONFIG_P44_BTDMX_LIGHTS 1
-    #define CONFIG_P44BTDMX_PWMLIGHT 0
+    #define CONFIG_P44BTDMX_PWMLIGHT 1
+    #define CONFIG_P44BTDMX_SINGLECHAIN 1 // only one, so RMT can use all buffers for text
+//    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio22:791:0:113:0:7:A"
+//    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio22:791:0:113:0:7:A"
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:791:0:113:0:7:A"
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:791:0:113:0:7:A"
   #elif DEVICE==DMX
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
@@ -217,13 +224,17 @@ public:
       new AnalogIo("pwmchip33.2", true, 0)
     ));
     dmxReceiver->addLight(light);
+    #endif
+    #if CONFIG_P44BTDMX_PWMLIGHT
     // - single ledchain
     LEDChainArrangement::addLEDChain(ledChainArrangement, firstChainConfig);
     #else
     // - dual ledchains
     const char *secondChainConfig = CONFIG_P44BTDMX_SECONDCHAIN_CFG;
     LEDChainArrangement::addLEDChain(ledChainArrangement, firstChainConfig);
+    #if !CONFIG_P44BTDMX_SINGLECHAIN
     LEDChainArrangement::addLEDChain(ledChainArrangement, secondChainConfig);
+    #endif
     #endif
     if (ledChainArrangement) {
       PixelRect r = ledChainArrangement->totalCover();
@@ -232,13 +243,17 @@ public:
       rootView->setBackgroundColor(black); // stack with black background is more efficient (and there's nothing below, anyway)
       ledChainArrangement->setRootView(rootView);
       ledChainArrangement->begin(true);
+      #if DEVICE==TEXT
+      dmxReceiver->addLight(new P44lrgTextLight(ledChainArrangement->getRootView(), r));
+      #else
       r.dy = 1;
       r.y = 0;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
-      #if !CONFIG_P44BTDMX_PWMLIGHT
+      #if !CONFIG_P44BTDMX_PWMLIGHT && !CONFIG_P44BTDMX_SINGLECHAIN
       r.y = 1;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
-      #endif
+      #endif // !PWMLIGHT
+      #endif // TEXT
       LOG(LOG_INFO, "lrg status: %s", rootView->viewStatus()->json_c_str());
     }
     else {
