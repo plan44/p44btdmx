@@ -228,6 +228,7 @@
                         <outlet property="gradientSlider" destination="7E2-Xc-auU" id="MMn-v6-kx4"/>
                         <outlet property="hueSlider" destination="I6X-W2-WaH" id="2QK-Pa-giw"/>
                         <outlet property="lightNo10s" destination="Lsc-Lt-ouy" id="wDy-hE-9Aw"/>
+                        <outlet property="lightNoLabel" destination="23P-m1-qt3" id="F8W-iB-bRq"/>
                         <outlet property="modeSelect" destination="DcP-Ul-bOl" id="T9p-Zf-uGn"/>
                         <outlet property="positionSlider" destination="c47-bL-zPc" id="aGu-FP-Bhr"/>
                         <outlet property="saturationSlider" destination="bkf-Yh-1S4" id="ROq-9k-uYe"/>

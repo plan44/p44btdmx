@@ -9,6 +9,7 @@
 
 @interface ViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UILabel *lightNoLabel;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *lightNo10s;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *lightNo1s;
 

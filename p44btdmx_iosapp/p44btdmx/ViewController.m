@@ -59,6 +59,7 @@
 {
   P44BTDMXManager *mgr = [AppDelegate sharedAppDelegate].p44BTDMXManager;
   [self updateLightNoFromControls];
+  [self.lightNoLabel setText:[NSString stringWithFormat:@"Light #%d = DMX %d..%d", mCurrentLightNo, mCurrentLightNo*LIGHT_CHANNELS+1, mCurrentLightNo*LIGHT_CHANNELS+LIGHT_CHANNELS]];
   int lightBase = mCurrentLightNo*LIGHT_CHANNELS;
   self.hueSlider.value = [mgr.p44BTDMX getChannel:lightBase+0];
   self.saturationSlider.value = [mgr.p44BTDMX getChannel:lightBase+1];
