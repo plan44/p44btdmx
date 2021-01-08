@@ -86,8 +86,11 @@ void P44lrgLight::applyChannels()
     // need updating RGB outputs
     if (channels[7].pending!=channels[7].current) {
       // mode change, including color
+      // - stop animation, reset alpha
       mLightView->stopAnimations();
       mAnimation.reset();
+      mLightView->setAlpha(255);
+      // - switch mode
       switch(mode) {
         default:
         case 0: {
