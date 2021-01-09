@@ -19,6 +19,7 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 @property (readonly, nonatomic) P44BTDMXManager* p44BTDMXManager;
+@property (strong, nonatomic) UIWindow *window;
 
 // convenience method to grab the typed AppDelegate
 + (AppDelegate *)sharedAppDelegate;

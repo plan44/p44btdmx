@@ -122,7 +122,7 @@
 - (void)startBroadcast
 {
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
-  [self performSelector:@selector(nextBeacon) withObject:nil afterDelay:0.1];
+  [self performSelector:@selector(nextBeacon) withObject:nil afterDelay:0.033];
 }
 
 @end
@@ -176,6 +176,8 @@
 {
   mP44BTDMXManager = [[P44BTDMXManager alloc] init];
   [self readStateAndConfig];
+  // immediately start broadcasting
+  [mP44BTDMXManager startBroadcast];
   // set system key from userdefaults
   return YES;
 }
