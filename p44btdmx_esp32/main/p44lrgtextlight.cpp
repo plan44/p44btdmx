@@ -36,7 +36,7 @@ using namespace p44;
 
 const char *textLightConfig =
   "{'type':'scroller','label':'SCROLLER','dx':113,'dy':7,"
-  "'scrolledview':{'type':'text','label':'LIGHT','x':0,'y':0,'sizetocontent':true,'text':'Hallo Roboter! +++ ','wrapmode':3},"
+  "'scrolledview':{'type':'text','label':'LIGHT','x':0,'y':0,'sizetocontent':true,'text':' ... ','wrapmode':3},"
   "'offsety':0}";
 
 
@@ -58,15 +58,27 @@ P44lrgTextLight::~P44lrgTextLight()
 {
 }
 
+const char* texts[] = {
+  "Hallo TV-Roboter! +++ ",
+  "Space Dream *** ",
+  "Des Menschen Seele  Gleicht dem Wasser:  Vom Himmel kommt es,  Zum Himmel steigt es,  Und wieder nieder  Zur Erde muss es.  Ewig wechselnd.  -  Strömt von der hohen,  Steilen Felsenwand  Der reine Strahl,  Dann stäubt er lieblich  In Wolkenwellen  Zum glatten Fels,  Und, leicht empfangen,  Wallt er verschleiernd,  Leisrauschend  Zur Tiefe nieder.  -  Ragen Klippen  Dem Sturz entgegen,  Schäumt er unmutig  Stufenweise  Zum Abgrund.  -  Im flachen Bette  Schleicht er das Wiesental hin,  Und in dem glatten See  Weiden ihr Antlitz  Alle Gestirne. - Wind ist der Welle  Lieblicher Buhler;  Wind rauscht von Grund aus  Schäumende Wogen.  -  Seele des Menschen  Wie gleichst du dem Wasser!  Schicksal des Menschen,  Wie gleichst du dem Wind!               ",
+  "NETTO 0 BIS 2030 - Wir fordern netto 0 Treibhausgasemissionen bis 2030, damit die Schweiz nur noch so viel Emissionen ausstösst, wie die Natur aufnehmen kann. (climatestrike.ch) +++ ",
+  "The Quick Brown Fox Jumps Over The Lazy Dog ... ",
+  "So Long, and Thanks for All the Fish --- ",
+  "Azelle, Bölle schäle, d Chatz gaht uf Walliselle, chunnt si wieder hei, hätt si chrummi Bei. Piff, paff, puff, und du bisch ehr und redlich duss."
+};
+const int numTexts = sizeof(texts)/sizeof(char*);
+
+
 
 // light layout: HSB + extras: 8 channels
 // 0: channel hue
 // 1: channel saturation
 // 2: channel brightness
 // 3: channel position
-// 4: channel size
-// 5: channel effect specific: speed?
-// 6: channel effect specific: gradient?
+// 4: channel text selector (normally: size)
+// 5: channel text scrolling speed
+// 6: channel effect specific: gradient
 // 7: channel mode
 
 void P44lrgTextLight::applyChannels()
@@ -111,6 +123,16 @@ void P44lrgTextLight::applyChannels()
       OLOG(LOG_INFO,"Color only change");
       mLightView->setForegroundColor(col);
     }
+  }
+  // Size selects the text
+  if (
+    (channels[4].pending!=channels[4].current) // text change
+  ) {
+    const char *text = " ... ";
+    if (channels[4].pending>=1 && channels[4].pending<=numTexts) {
+      text = texts[channels[4].pending-1];
+    }
+    mLightView->setText(text);
   }
   // Speed
   if (

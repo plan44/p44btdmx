@@ -37,7 +37,7 @@
   #define TEXT 3
   #define DMX 4
   // current device type
-  #define DEVICE MASK
+  #define DEVICE TEXT
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
@@ -61,12 +61,15 @@
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
     #define CONFIG_P44_BTDMX_LIGHTS 1
-    #define CONFIG_P44BTDMX_PWMLIGHT 1
     #define CONFIG_P44BTDMX_SINGLECHAIN 1 // only one, so RMT can use all buffers for text
-//    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio22:791:0:113:0:7:A"
-//    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio22:791:0:113:0:7:A"
-    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:791:0:113:0:7:A"
-    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:791:0:113:0:7:A"
+    // real HW (Auto-type controller)
+    #define CONFIG_P44BTDMX_PWMLIGHT 0
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio22:791:0:113:0:7:A"
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio22:791:0:113:0:7:A"
+//    // test HW (mask-type controller)
+//    #define CONFIG_P44BTDMX_PWMLIGHT 1
+//    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:791:0:113:0:7:A"
+//    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:791:0:113:0:7:A"
   #elif DEVICE==DMX
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
@@ -229,7 +232,7 @@ public:
     // - single ledchain
     LEDChainArrangement::addLEDChain(ledChainArrangement, firstChainConfig);
     #else
-    // - dual ledchains
+    // - (possibly) dual ledchains
     const char *secondChainConfig = CONFIG_P44BTDMX_SECONDCHAIN_CFG;
     LEDChainArrangement::addLEDChain(ledChainArrangement, firstChainConfig);
     #if !CONFIG_P44BTDMX_SINGLECHAIN
