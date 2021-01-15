@@ -124,19 +124,31 @@ void P44lrgTextLight::applyChannels()
       mLightView->setForegroundColor(col);
     }
   }
-  // Size selects the text
+  // Position selects the text
   if (
-    (channels[4].pending!=channels[4].current) // text change
+    (channels[3].pending!=channels[3].current)
   ) {
     const char *text = " ... ";
-    if (channels[4].pending>=1 && channels[4].pending<=numTexts) {
-      text = texts[channels[4].pending-1];
+    if (channels[3].pending>=1 && channels[3].pending<=numTexts) {
+      text = texts[channels[3].pending-1];
     }
     mLightView->setText(text);
+    // also re-apply relative extent to cover new contents
+    mLightView->setRelativeExtent((double)channels[4].pending/128); // 0..2, so radius (center to edge) can span entire light
   }
-  // Speed
+  // Size
   if (
-    (channels[5].pending!=channels[5].current) // (scroll) speed change
+    (channels[4].pending!=channels[4].current)
+  ) {
+    // to make sure light works out of the box, mode 0 actively suppresses size changes!
+    if (mode!=0) {
+      OLOG(LOG_INFO,"Size change");
+      mLightView->setRelativeExtent((double)channels[4].pending/128);
+    }
+  }
+  // Scrolling speed
+  if (
+    (channels[5].pending!=channels[5].current)
   ) {
     int iv = 255-channels[5].pending;
     if (iv==255) {
