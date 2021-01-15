@@ -132,6 +132,22 @@ void P44lrgLight::applyChannels()
           animationChanged = true;
           break;
         }
+        case 5:
+          // fixed soft edge, moving in x direction, gradient and speed determine amplitude and interval
+          mLightView->setColoringParameters(col, -0.9, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
+          goto mover;
+        case 6:
+          // hard edge, moving in x direction, gradient and speed determine amplitude and interval
+          mLightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
+        mover: {
+          mLightView->setWrapMode(P44View::clipXY);
+          mLightView->setRelativeExtent((double)channels[4].pending/255);
+          // install new animation
+          mAnimation = mLightView->animatorFor("content_x");
+          mAnimation->function("easeinout");
+          animationChanged = true;
+          break;
+        }
       }
       OLOG(LOG_INFO,"Mode and/or color change");
       OLOG(LOG_INFO,"- new view hierarchy: %s", mLightView->getParent()->viewStatus()->json_c_str());
@@ -142,14 +158,20 @@ void P44lrgLight::applyChannels()
       mLightView->setForegroundColor(col);
     }
   }
+  // Position
   if (
-    (channels[3].pending!=channels[3].current) // position
+    (channels[3].pending!=channels[3].current)
   ) {
     OLOG(LOG_INFO,"Position change");
     mLightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
+    if (mode==5 || mode==6) {
+      // change of position needs restart of (positional) animation
+      animationChanged = true;
+    }
   }
+  // Size
   if (
-    (channels[4].pending!=channels[4].current) // size
+    (channels[4].pending!=channels[4].current)
   ) {
     // to make sure light works out of the box, mode 0 actively suppresses size changes!
     if (mode!=0) {
@@ -188,10 +210,23 @@ void P44lrgLight::applyChannels()
   // (re)start animation
   if (mAnimation && animationChanged) {
     switch (mode) {
-      case 4:
+      case 4: {
         // intensity 0..255, changing from current value to currentvalue +/- gradient channel value
         mAnimation->repeat(true, 0)->from(channels[2].pending)->animate(channels[2].pending+channels[6].pending*2-255, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
         break;
+      }
+      case 5:
+      case 6: {
+        // position 0..255, changing from current x to x +/- frame.x size scaled by gradient channel value
+        // - set start poition
+        mLightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
+        PixelRect content = mLightView->getContent();
+        PixelRect frame = mLightView->getFrame();
+        OLOG(LOG_INFO, "mLightView: %s", mLightView->viewStatus()->json_c_str());
+        // - animate from there +/- the frame size
+        mAnimation->repeat(true, 0)->from(content.x)->animate(content.x+channels[6].pending*frame.dx*2/255-frame.dx, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
+        break;
+      }
       default:
         break;
     }
