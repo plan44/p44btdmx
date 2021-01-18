@@ -37,26 +37,39 @@ namespace p44 {
   {
     typedef P44DMXLight inherited;
 
-    AnalogIoPtr mRedOut;
-    AnalogIoPtr mGreenOut;
-    AnalogIoPtr mBlueOut;
+    AnalogColorOutput colorOutput;
 
     ValueAnimatorPtr mAnimator;
-    double mModulator;
 
   public:
     PWMLight(AnalogIoPtr aRedOut, AnalogIoPtr aGreenOut, AnalogIoPtr aBlueOut);
     virtual ~PWMLight();
 
+    /// get current power
+    /// @return power in milliwatts
+    int getCurrentPower();
+
+    /// Return the power it *would* need to display the current state (altough power limiting might actually reducing it)
+    /// @return how many milliwatts (approximatively) the color light would use if not limited
+    int getNeededPower();
+
+    /// set power limit
+    /// @param aMilliWatts max power in milliwatts
+    void setPowerLimit(int aMilliWatts);
+
+    /// get current power limit
+    /// @return currently set power limit in milliwatts, 0=no limit
+    int getPowerLimit();
+
+    /// set powers of the channels (when set to 100% intensity)
+    void setChannelPowers(int aRedMilliWatts, int aGreenMilliWatts, int aBlueMilliWatts);
+
     /// apply channel values
     /// @note base class just confirms apply by updating "current" field from "pending" in internal channel data
-    virtual void applyChannels() P44_OVERRIDE;
-
-  private:
-    void updatePWM();
-    void modulate(double aValue);
+    virtual bool applyChannels() P44_OVERRIDE;
 
   };
+  typedef boost::intrusive_ptr<PWMLight> PWMLightPtr;
 
 } // namespace p44
 
