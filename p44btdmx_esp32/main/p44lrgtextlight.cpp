@@ -81,7 +81,7 @@ const int numTexts = sizeof(texts)/sizeof(char*);
 // 6: channel effect specific: gradient
 // 7: channel mode
 
-void P44lrgTextLight::applyChannels()
+bool P44lrgTextLight::applyChannels()
 {
   uint8_t mode = channels[7].pending;
   bool animationChanged = false;
@@ -179,6 +179,6 @@ void P44lrgTextLight::applyChannels()
   mLightView->requestUpdateIfNeeded();
   FOCUSLOG("did request update");
   // confirm apply
-  inherited::applyChannels();
+  return inherited::applyChannels();
 }
 

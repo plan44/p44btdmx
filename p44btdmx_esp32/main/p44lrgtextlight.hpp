@@ -45,7 +45,7 @@ namespace p44 {
 
     /// apply channel values
     /// @note base class just confirms apply by updating "current" field from "pending" in internal channel data
-    virtual void applyChannels() P44_OVERRIDE;
+    virtual bool applyChannels() P44_OVERRIDE;
 
   };
 

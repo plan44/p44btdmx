@@ -128,24 +128,25 @@ P44BTDMXreceiver::~P44BTDMXreceiver()
 #define PLAN44_SUBTYPE_P44BTDMX 0x44
 #define APPLE_SUBTYPE_IBEACON 0x02
 
-void P44BTDMXreceiver::processBTAdvMfgData(const string aAdvMfgData)
+bool P44BTDMXreceiver::processBTAdvMfgData(const string aAdvMfgData)
 {
   FOCUSLOG("Got advMfgData: %s", binaryToHexString(aAdvMfgData,' ').c_str());
   // check if its one of our recognized formats
-  if (aAdvMfgData.size()<4) return;
+  if (aAdvMfgData.size()<4) return false;
   uint16_t companyBTId = aAdvMfgData[0]+(aAdvMfgData[1]<<8);
   if (companyBTId==BT_COMPANY_ID_PLAN44 || companyBTId==BT_COMPANY_ID_BLUEKITCHEN) {
     // raw p44BTDMX
     if (aAdvMfgData[2]==PLAN44_SUBTYPE_P44BTDMX) {
-      processP44BTDMXpayload(aAdvMfgData.substr(3), true);
+      return processP44BTDMXpayload(aAdvMfgData.substr(3), true);
     }
   }
   if (companyBTId==BT_COMPANY_ID_APPLE) {
     // check for p44BTDMX disguised as Apple iBeacon
     if (aAdvMfgData[2]==APPLE_SUBTYPE_IBEACON) {
-      processP44BTDMXpayload(aAdvMfgData.substr(4,(size_t)aAdvMfgData[3]), false);
+      return processP44BTDMXpayload(aAdvMfgData.substr(4,(size_t)aAdvMfgData[3]), false);
     }
   }
+  return false;
 }
 
 
@@ -158,7 +159,7 @@ void P44BTDMXreceiver::processBTAdvMfgData(const string aAdvMfgData)
 
 #define NOT_NATIVE_LOCKOUT_PERIOD (10*Second)
 
-void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool aNative)
+bool P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool aNative)
 {
   FOCUSLOG("Got p44BTDMX payload: %s", binaryToHexString(aP44BTDMXData,' ').c_str());
   // FIXME: for the iOS app, we don't want MainLoop pulled in, so only checking iBeacon lockout on ESP32 for now
@@ -185,7 +186,7 @@ void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool a
       (aP44BTDMXData[i+1] ^ systemKeyByte(i+1));
     if (recCrc==crc) {
       // valid p44BTDMX data
-      processP44DMX(decoded);
+      return processP44DMX(decoded);
     }
     else {
       FOCUSLOG("- p44BTDMX CRC error: received = 0x%04hX, expected=0x%04hX", recCrc, crc)
@@ -194,10 +195,11 @@ void P44BTDMXreceiver::processP44BTDMXpayload(const string aP44BTDMXData, bool a
   else {
     FOCUSLOG("- not handling non-native data arriving less than %lld seconds after native data", NOT_NATIVE_LOCKOUT_PERIOD/Second);
   }
+  return false;
 }
 
 
-void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
+bool P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
 {
   FOCUSLOG("Got p44BTDMX commands: %s", binaryToHexString(aP44BTDMXCmds,' ').c_str());
   // p44DMX delta update commands
@@ -209,6 +211,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
   //   - 2=other channel: channelindex/value, 2 data bytes
   int i = 0;
   int ln = (int)aP44BTDMXCmds.size();
+  bool anyChanges = false;
   while (i<ln) {
     uint8_t addrCmd = aP44BTDMXCmds[i];
     if (addrCmd==0xFF) {
@@ -229,7 +232,7 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
     uint8_t cmd = addrCmd - 3*lightIndex; // modulo 3
     lightIndex -= mFirstLightNumber;
     if (lightIndex>=mLights.size()) lightIndex = -1; // not one of our lights
-    if (i++>=ln) return; // error, not enough data: all commands have at least one byte
+    if (i++>=ln) return anyChanges; // error, not enough data: all commands have at least one byte
     switch (cmd) {
       case 0: {
         // set brightness (V channel)
@@ -238,13 +241,13 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
           FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, b);
           P44DMXLightPtr light = mLights[lightIndex];
           light->setChannel(2,b);
-          light->applyChannels();
+          if (light->applyChannels()) anyChanges = true;
         }
         break;
       }
       case 1: {
         // set HSV at once
-        if (i+3>ln) return; // error, not enough data
+        if (i+3>ln) return anyChanges; // error, not enough data
         uint8_t h = aP44BTDMXCmds[i++];
         uint8_t s = aP44BTDMXCmds[i++];
         uint8_t b = aP44BTDMXCmds[i++];
@@ -254,27 +257,28 @@ void P44BTDMXreceiver::processP44DMX(const string aP44BTDMXCmds)
           light->setChannel(0,h);
           light->setChannel(1,s);
           light->setChannel(2,b);
-          light->applyChannels();
+          if (light->applyChannels()) anyChanges = true;
         }
         break;
       }
       case 2: {
         // set other channels by index
-        if (i+2>ln) return; // error, not enough data
+        if (i+2>ln) return anyChanges; // error, not enough data
         uint8_t cidx = aP44BTDMXCmds[i++];
         uint8_t value = aP44BTDMXCmds[i++];
         if (lightIndex>=0) {
           FOCUSLOG("- local Light #%d (global #%d): Cmd%d %02X %02X", lightIndex, lightIndex+mFirstLightNumber, cmd, cidx, value);
           P44DMXLightPtr light = mLights[lightIndex];
           light->setChannel(cidx,value);
-          light->applyChannels();
+          if (light->applyChannels()) anyChanges = true;
         }
         break;
       }
       default:
-        return; // error
+        return anyChanges; // error
     }
   }
+  return anyChanges;
 }
 
 
@@ -322,15 +326,18 @@ void P44DMXLight::setChannel(uint8_t aChannelIndex, uint8_t aValue)
 }
 
 
-void P44DMXLight::applyChannels()
+bool P44DMXLight::applyChannels()
 {
   // confirm all channels applied
+  bool anyChanges = false;
   for (int i=0; i<cNumChannels; i++) {
     if (channels[i].current!=channels[i].pending) {
       OLOG(LOG_INFO,"Channel #%d changed from %d to %d", i, channels[i].current, channels[i].pending);
       channels[i].current = channels[i].pending;
+      anyChanges = true;
     }
   }
+  return anyChanges;
 }
 
 

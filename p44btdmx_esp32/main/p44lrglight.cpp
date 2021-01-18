@@ -65,7 +65,7 @@ P44lrgLight::~P44lrgLight()
 // 6: channel effect specific: gradient?
 // 7: channel mode
 
-void P44lrgLight::applyChannels()
+bool P44lrgLight::applyChannels()
 {
   uint8_t mode = channels[7].pending;
   bool animationChanged = false;
@@ -236,5 +236,5 @@ void P44lrgLight::applyChannels()
   mLightView->requestUpdateIfNeeded();
   FOCUSLOG("did request update");
   // confirm apply
-  inherited::applyChannels();
+  return inherited::applyChannels();
 }

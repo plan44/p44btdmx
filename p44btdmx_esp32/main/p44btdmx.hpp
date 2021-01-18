@@ -95,17 +95,20 @@ namespace p44 {
     /// process manufacturer specific advertisement data (which might contain p44BTDMX data
     /// @param aAdvMfgData data bytes from a AD Struct of type "manufacturer specific data"
     /// @note p44BTDMX recognizes Apple iBeacons as well as native plan44 and bluekitchen manufacturer data as carriers
-    void processBTAdvMfgData(const string aAdvMfgData);
+    /// @return tru if any p44DMX channels have changed
+    bool processBTAdvMfgData(const string aAdvMfgData);
 
     /// process p44BTDMX payload data, coming from one of the possible carriers, encrypted/obfuscated by the system key
     /// @param aP44BTDMXData raw p44BTDMX data
     /// @param aNative if set, the payload is considered "native", i.e. coming from a dedicated P44BTDMX sender,
     ///   not from a iBeacon sent by an iOS device.
-    void processP44BTDMXpayload(const string aP44BTDMXData, bool aNative);
+    /// @return tru if any p44DMX channels have changed
+    bool processP44BTDMXpayload(const string aP44BTDMXData, bool aNative);
 
     /// process p44DMX decrypted delta update commands
     /// @param aP44DMXCmds plain text p44DMX delta commands
-    void processP44DMX(const string aP44DMXCmds);
+    /// @return tru if any p44DMX channels have changed
+    bool processP44DMX(const string aP44DMXCmds);
 
   };
 
@@ -140,7 +143,8 @@ namespace p44 {
 
     /// apply channel values
     /// @note base class just confirms apply by updating "current" field from "pending" in internal channel data
-    virtual void applyChannels();
+    /// @return true if any change has happened
+    virtual bool applyChannels();
 
   };
 

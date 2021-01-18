@@ -34,8 +34,9 @@
   // device types
   #define AUTO 1
   #define MASK 2
-  #define TEXT 3
-  #define DMX 4
+  #define MINIMASK 3
+  #define TEXT 4
+  #define DMX 5
   // current device type
   #define DEVICE MASK
   // common settings
@@ -43,12 +44,23 @@
   #define CONFIG_P44_WIFI_SUPPORT 0
   // settings for different device types
   #if DEVICE==MASK
+    #define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
+    #define CONFIG_P44_DMX_RX 0
+    #define CONFIG_P44_BTDMX_SENDER 0
+    #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_BTDMX_LIGHTS 1
+    #define CONFIG_P44BTDMX_PWMLIGHT 1
+    #define CONFIG_P44BTDMX_MAXMILLIWATTS 15000 // Total consumption
+    #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 2000 // PWM is limited to rest of budget left from ledchains, but not less than 2W
+    #define CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER 12000 // ..and not more than 8W
+  #elif DEVICE==MINIMASK
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 1
+    #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 0 // not limited, connected LEDs cant exceed max power anyway
   #elif DEVICE==AUTO
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
@@ -133,6 +145,15 @@
   // - second ledchain on DI2 (gpio21)
   #define CONFIG_P44BTDMX_SECONDCHAIN_CFG "WS2813:gpio21:150:0:150:1:1"
 #endif
+#ifndef CONFIG_P44BTDMX_MAXMILLIWATTS
+  #define CONFIG_P44BTDMX_MAXMILLIWATTS 15000 // standard 10Ah Powerbank delivers 3A @ 5V
+#endif
+#ifndef CONFIG_P44BTDMX_PWMLIGHT_MINPOWER
+  #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 0 // no minimal power reserve for PWM
+#endif
+#ifndef CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER
+  #define CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER 10000 // max PWM light power
+#endif
 
 
 using namespace p44;
@@ -151,6 +172,7 @@ class P44BTDMXController : public Application
   LEDChainArrangementPtr ledChainArrangement;
   DigitalIoPtr ledChainEnable; ///< output in P44-BTLC for enabling the 5V WS281x drivers (active low)
   P44BTDMXreceiverPtr dmxReceiver; ///< p44 BT DMX receiver
+  PWMLightPtr pwmLight; ///< PWM light, if the is any
   #endif
 
   #if CONFIG_P44_BTDMX_SENDER
@@ -219,14 +241,15 @@ public:
     // Real lights initialisation
     const char *firstChainConfig = (dispswitch&0x20) ? CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 : CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0;
     #if CONFIG_P44BTDMX_PWMLIGHT
-    P44DMXLightPtr light;
     // - PWM
-    light = P44DMXLightPtr(new PWMLight(
+    pwmLight = PWMLightPtr(new PWMLight(
       new AnalogIo("pwmchip14.0", true, 0),
       new AnalogIo("pwmchip12.1", true, 0),
       new AnalogIo("pwmchip33.2", true, 0)
     ));
-    dmxReceiver->addLight(light);
+    // measured beauty mask values @ 20.5V
+    pwmLight->setChannelPowers(7175, 21525, 17425);
+    dmxReceiver->addLight(pwmLight);
     #endif
     #if CONFIG_P44BTDMX_PWMLIGHT
     // - single ledchain
@@ -245,6 +268,7 @@ public:
       rootView->setFrame(r);
       rootView->setBackgroundColor(black); // stack with black background is more efficient (and there's nothing below, anyway)
       ledChainArrangement->setRootView(rootView);
+      ledChainArrangement->setPowerLimit(CONFIG_P44BTDMX_MAXMILLIWATTS-CONFIG_P44BTDMX_PWMLIGHT_MINPOWER);
       ledChainArrangement->begin(true);
       #if DEVICE==TEXT
       dmxReceiver->addLight(new P44lrgTextLight(ledChainArrangement->getRootView(), r));
@@ -313,7 +337,22 @@ public:
       uint8_t adMfgDataSz;
       if (BtAdvertisements::findADStruct((uint8_t *)aAdvData.c_str(), 0xFF, adMfgData, adMfgDataSz)) {
         // let dmxreceiver handle it
-        dmxReceiver->processBTAdvMfgData(string((const char*)adMfgData, adMfgDataSz));
+        if (dmxReceiver->processBTAdvMfgData(string((const char*)adMfgData, adMfgDataSz))) {
+          // has caused changes in some of our channels -> recalculate power limit
+          #if CONFIG_P44BTDMX_MAXMILLIWATTS>0
+          LOG(LOG_INFO, "- LED chain power = %dmW, limit = %dmW, needed = %dmW", ledChainArrangement->getCurrentPower(), ledChainArrangement->getPowerLimit(), ledChainArrangement->getNeededPower());
+          #if CONFIG_P44BTDMX_PWMLIGHT_MINPOWER
+          if (pwmLight) {
+            int pwmPower = CONFIG_P44BTDMX_MAXMILLIWATTS-ledChainArrangement->getCurrentPower();
+            if (CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER>0 && pwmPower>CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER) {
+              pwmPower = CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER;
+            }
+            if (pwmPower>0) pwmLight->setPowerLimit(pwmPower); // PWM can use rest
+            LOG(LOG_INFO, "- PWM light power = %dmW, limit = %dmW, needed = %dmW", pwmLight->getCurrentPower(), pwmLight->getPowerLimit(), pwmLight->getNeededPower());
+          }
+          #endif
+          #endif
+        }
       }
     }
   }
