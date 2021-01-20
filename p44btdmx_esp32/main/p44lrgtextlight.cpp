@@ -112,6 +112,8 @@ bool P44lrgTextLight::applyChannels()
         case 3: {
           // tunable color gradient
           mLightView->setColoringParameters(col, 0, gradient_none, (double)channels[6].pending/64-2, gradient_curve_lin+gradient_repeat_oscillating, 0, gradient_none, false);
+          // also re-apply relative extent to cover current contents
+          mLightView->setRelativeExtent((double)channels[4].pending/128); // 0..2, so radius (center to edge) can span entire light
           break;
         }
       }
