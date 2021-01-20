@@ -44,15 +44,15 @@
   #define CONFIG_P44_WIFI_SUPPORT 0
   // settings for different device types
   #if DEVICE==MASK
-    #define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
+    //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 1
-    #define CONFIG_P44BTDMX_MAXMILLIWATTS 15000 // Total consumption
+    #define CONFIG_P44BTDMX_MAXMILLIWATTS 15000 // Total consumption: 15W
     #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 2000 // PWM is limited to rest of budget left from ledchains, but not less than 2W
-    #define CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER 12000 // ..and not more than 8W
+    #define CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER 6300 // ..and not more than 6.3W (DCDC @17.5V starts to fail when using more)
   #elif DEVICE==MINIMASK
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
@@ -247,8 +247,9 @@ public:
       new AnalogIo("pwmchip12.1", true, 0),
       new AnalogIo("pwmchip33.2", true, 0)
     ));
-    // measured beauty mask values @ 20.5V
-    pwmLight->setChannelPowers(7175, 21525, 17425);
+    // measured beauty mask values @ 18.0V: R: 250mA (through 22R), G: 350mA, B: 250mA
+    // measured beauty mask values @ 17.5V: R: 230mA (through 22R), G: 250mA, B: 150mA
+    pwmLight->setChannelPowers(4025, 6125, 4375); // @ 17.5V
     dmxReceiver->addLight(pwmLight);
     #endif
     #if CONFIG_P44BTDMX_PWMLIGHT
