@@ -133,10 +133,12 @@ bool P44lrgLight::applyChannels()
           break;
         }
         case 5:
+        case 7:
           // fixed soft edge, moving in x direction, gradient and speed determine amplitude and interval
           mLightView->setColoringParameters(col, -0.9, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
           goto mover;
         case 6:
+        case 8:
           // hard edge, moving in x direction, gradient and speed determine amplitude and interval
           mLightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
         mover: {
@@ -144,7 +146,6 @@ bool P44lrgLight::applyChannels()
           mLightView->setRelativeExtent((double)channels[4].pending/255);
           // install new animation
           mAnimation = mLightView->animatorFor("content_x");
-          mAnimation->function("easeinout");
           animationChanged = true;
           break;
         }
@@ -216,7 +217,9 @@ bool P44lrgLight::applyChannels()
         break;
       }
       case 5:
-      case 6: {
+      case 6:
+      case 7:
+      case 8: {
         // position 0..255, changing from current x to x +/- frame.x size scaled by gradient channel value
         // - set start poition
         mLightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
@@ -224,7 +227,16 @@ bool P44lrgLight::applyChannels()
         PixelRect frame = mLightView->getFrame();
         OLOG(LOG_INFO, "mLightView: %s", mLightView->viewStatus()->json_c_str());
         // - animate from there +/- the frame size
-        mAnimation->repeat(true, 0)->from(content.x)->animate(content.x+channels[6].pending*frame.dx*2/255-frame.dx, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
+        if (mode==7 || mode==8) {
+          // shoot
+          mAnimation->function("easein");
+          mAnimation->repeat(false, 0)->from(content.x)->animate(content.x+channels[6].pending*frame.dx*2/255-frame.dx, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
+        }
+        else {
+          // swing forth and back
+          mAnimation->function("easeinout");
+          mAnimation->repeat(true, 0)->from(content.x)->animate(content.x+channels[6].pending*frame.dx*2/255-frame.dx, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
+        }
         break;
       }
       default:
