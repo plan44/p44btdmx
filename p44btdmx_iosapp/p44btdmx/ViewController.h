@@ -21,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet UISlider *sizeSlider;
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *modeSelect;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *modeHiSelect;
 @property (weak, nonatomic) IBOutlet UISlider *speedSlider;
 @property (weak, nonatomic) IBOutlet UISlider *gradientSlider;
 

@@ -80,7 +80,8 @@
   self.sizeSlider.value = [mgr.p44BTDMX getChannel:lightBase+4];
   self.speedSlider.value = [mgr.p44BTDMX getChannel:lightBase+5];
   self.gradientSlider.value = [mgr.p44BTDMX getChannel:lightBase+6];
-  self.modeSelect.selectedSegmentIndex = [mgr.p44BTDMX getChannel:lightBase+7];
+  self.modeSelect.selectedSegmentIndex = [mgr.p44BTDMX getChannel:lightBase+7] & 0x3F;
+  self.modeHiSelect.selectedSegmentIndex = ([mgr.p44BTDMX getChannel:lightBase+7]>>6) & 0x03;
 }
 
 
@@ -167,7 +168,7 @@
 
 - (IBAction)modeChanged:(id)sender
 {
-  [self changeChannel:7 toValue:self.modeSelect.selectedSegmentIndex];
+  [self changeChannel:7 toValue:self.modeSelect.selectedSegmentIndex + (self.modeHiSelect.selectedSegmentIndex << 6)];
 }
 
 

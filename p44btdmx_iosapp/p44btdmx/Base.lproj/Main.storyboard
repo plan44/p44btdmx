@@ -149,6 +149,7 @@
                                     <segment title="6"/>
                                     <segment title="7"/>
                                     <segment title="8"/>
+                                    <segment title="9"/>
                                 </segments>
                                 <connections>
                                     <action selector="modeChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="xRN-SH-IE2"/>
@@ -170,6 +171,18 @@
                                     <action selector="gradientChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="DIh-Kf-ldo"/>
                                 </connections>
                             </slider>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Pxk-vh-B2T">
+                                <rect key="frame" x="20" y="602" width="335" height="32"/>
+                                <segments>
+                                    <segment title="line@N"/>
+                                    <segment title="wide@N"/>
+                                    <segment title="line@0"/>
+                                    <segment title="wide@0"/>
+                                </segments>
+                                <connections>
+                                    <action selector="modeChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="3Te-t6-ycl"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -189,6 +202,7 @@
                             <constraint firstItem="7E2-Xc-auU" firstAttribute="top" secondItem="yow-sR-pgF" secondAttribute="bottom" constant="6" id="LU6-aP-dFa"/>
                             <constraint firstItem="DcP-Ul-bOl" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="NNk-AQ-DyI"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="7E2-Xc-auU" secondAttribute="trailing" constant="20" id="OhB-z2-bMh"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Pxk-vh-B2T" secondAttribute="trailing" constant="20" id="PeS-pa-PR1"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qLZ-4v-hnY" secondAttribute="trailing" constant="20" id="QKf-2f-xWa"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="I6X-W2-WaH" secondAttribute="trailing" constant="20" id="Rsj-Vb-HTf"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qlm-MN-q1v" secondAttribute="trailing" constant="20" id="Tdp-Yb-Loe"/>
@@ -203,6 +217,7 @@
                             <constraint firstItem="qLZ-4v-hnY" firstAttribute="top" secondItem="bkf-Yh-1S4" secondAttribute="bottom" constant="6" id="dB4-h8-vZa"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="23P-m1-qt3" secondAttribute="trailing" constant="20" id="eLc-HE-JlP"/>
                             <constraint firstItem="ZyI-aC-Ucw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="fFw-PV-ECt"/>
+                            <constraint firstItem="Pxk-vh-B2T" firstAttribute="top" secondItem="7E2-Xc-auU" secondAttribute="bottom" constant="8" id="ira-Ub-fGy"/>
                             <constraint firstItem="yow-sR-pgF" firstAttribute="top" secondItem="DcP-Ul-bOl" secondAttribute="bottom" constant="12" id="jNl-M6-6Tp"/>
                             <constraint firstItem="9n3-e5-RzX" firstAttribute="top" secondItem="c47-bL-zPc" secondAttribute="bottom" constant="6" id="jSJ-kq-UiH"/>
                             <constraint firstItem="tIC-Se-p1m" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="kC3-32-arH"/>
@@ -214,6 +229,7 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="JYo-rU-pFg" secondAttribute="trailing" constant="20" id="mVR-SA-pNr"/>
                             <constraint firstItem="c47-bL-zPc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="sDv-cv-nZP"/>
                             <constraint firstItem="bkf-Yh-1S4" firstAttribute="top" secondItem="I6X-W2-WaH" secondAttribute="bottom" constant="6" id="ttX-wj-2ec"/>
+                            <constraint firstItem="Pxk-vh-B2T" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="uBu-oJ-9Au"/>
                             <constraint firstItem="qlm-MN-q1v" firstAttribute="top" secondItem="9n3-e5-RzX" secondAttribute="bottom" constant="14" id="uqk-OU-HQp"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ZyI-aC-Ucw" secondAttribute="trailing" constant="20" id="veF-ex-z2A"/>
                             <constraint firstItem="I6X-W2-WaH" firstAttribute="top" secondItem="JYo-rU-pFg" secondAttribute="bottom" constant="6" id="wIo-m5-K4K"/>
@@ -229,6 +245,7 @@
                         <outlet property="hueSlider" destination="I6X-W2-WaH" id="2QK-Pa-giw"/>
                         <outlet property="lightNo10s" destination="Lsc-Lt-ouy" id="wDy-hE-9Aw"/>
                         <outlet property="lightNoLabel" destination="23P-m1-qt3" id="F8W-iB-bRq"/>
+                        <outlet property="modeHiSelect" destination="Pxk-vh-B2T" id="DIQ-fD-vbM"/>
                         <outlet property="modeSelect" destination="DcP-Ul-bOl" id="T9p-Zf-uGn"/>
                         <outlet property="positionSlider" destination="c47-bL-zPc" id="aGu-FP-Bhr"/>
                         <outlet property="saturationSlider" destination="bkf-Yh-1S4" id="ROq-9k-uYe"/>
