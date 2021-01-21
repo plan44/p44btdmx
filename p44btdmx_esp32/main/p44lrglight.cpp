@@ -36,6 +36,8 @@ using namespace p44;
 P44lrgLight::P44lrgLight(P44ViewPtr aRootView, PixelRect aFrame)
 {
   FOCUSLOG("P44lrgLight created on mainloop@%p", &MainLoop::currentMainLoop());
+  mOrigFrame = aFrame;
+  aFrame.y = 0; // by default, light is on chain0
   mLightView = LightSpotViewPtr(new LightSpotView);
   mLightView->setZOrder(mLocalLightNumber);
   mLightView->setFrame(aFrame);
@@ -67,7 +69,7 @@ P44lrgLight::~P44lrgLight()
 
 bool P44lrgLight::applyChannels()
 {
-  uint8_t mode = channels[7].pending;
+  uint8_t mode = channels[7].pending & 0x3F;
   bool animationChanged = false;
   // - convert HSV to Pixel
   PixelColor col = hsbToPixel(
@@ -86,6 +88,14 @@ bool P44lrgLight::applyChannels()
     // need updating RGB outputs
     if (channels[7].pending!=channels[7].current) {
       // mode change, including color
+      // - y pos and size
+      PixelRect f = mLightView->getFrame();
+      f.y = channels[7].pending & 0x80 ? 0 : mOrigFrame.y;
+      f.dy = channels[7].pending & 0x40 ? 4 : 1;
+      mLightView->setFrame(f);
+      PixelPoint sz = mLightView->getContentSize();
+      sz.y = f.dy;
+      mLightView->setContentSize(sz);
       // - stop animation, reset alpha
       mLightView->stopAnimations();
       mAnimation.reset();

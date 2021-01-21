@@ -84,7 +84,6 @@ const int numTexts = sizeof(texts)/sizeof(char*);
 bool P44lrgTextLight::applyChannels()
 {
   uint8_t mode = channels[7].pending;
-  bool animationChanged = false;
   // - convert HSV to Pixel
   PixelColor col = hsbToPixel(
     (double)channels[0].pending/255*360,

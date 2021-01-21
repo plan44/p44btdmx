@@ -38,6 +38,7 @@ namespace p44 {
 
     LightSpotViewPtr mLightView;
     ValueAnimatorPtr mAnimation;
+    PixelRect mOrigFrame;
 
   public:
     P44lrgLight(P44ViewPtr aRootView, PixelRect aFrame);
