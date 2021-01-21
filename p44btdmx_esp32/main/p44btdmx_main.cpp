@@ -53,6 +53,7 @@
     #define CONFIG_P44BTDMX_MAXMILLIWATTS 15000 // Total consumption: 15W
     #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 2000 // PWM is limited to rest of budget left from ledchains, but not less than 2W
     #define CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER 6300 // ..and not more than 6.3W (DCDC @17.5V starts to fail when using more)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:94:0:94:0:1" // single ledchain on DI0 (gpio23)
   #elif DEVICE==MINIMASK
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
