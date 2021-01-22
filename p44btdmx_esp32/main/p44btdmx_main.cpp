@@ -38,41 +38,49 @@
   #define TEXT 4
   #define DMX 5
   // current device type
-  #define DEVICE MASK
+  #define DEVICE AUTO
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
   // settings for different device types
   #if DEVICE==MASK
+    #define CONFIG_P44_BUILD_VARIANT "Mask"
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 0
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 1
-    #define CONFIG_P44BTDMX_MAXMILLIWATTS 15000 // Total consumption: 15W
     #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 2000 // PWM is limited to rest of budget left from ledchains, but not less than 2W
     #define CONFIG_P44BTDMX_PWMLIGHT_MAXPOWER 6300 // ..and not more than 6.3W (DCDC @17.5V starts to fail when using more)
     #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:94:0:94:0:1" // single ledchain on DI0 (gpio23)
   #elif DEVICE==MINIMASK
+    #define CONFIG_P44_BUILD_VARIANT "MiniMask"
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 0
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 1
     #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 0 // not limited, connected LEDs cant exceed max power anyway
   #elif DEVICE==AUTO
-    #define CONFIG_P44_DMX_RX 0
-    #define CONFIG_P44_BTDMX_SENDER 0
-    #define CONFIG_P44_BTDMX_RECEIVER 1
-    #define CONFIG_P44_BTDMX_LIGHTS 1
-    #define CONFIG_P44BTDMX_PWMLIGHT 0
-  #elif DEVICE==TEXT
+    #define CONFIG_P44_BUILD_VARIANT "Auto"
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 1
+    #define CONFIG_P44_BTDMX_LIGHTS 1
+    #define CONFIG_P44BTDMX_PWMLIGHT 0
+  #elif DEVICE==TEXT
+    #define CONFIG_P44_BUILD_VARIANT "Text"
+    //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
+    #define CONFIG_P44_DMX_RX 0
+    #define CONFIG_P44_BTDMX_SENDER 0
+    #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 0
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_SINGLECHAIN 1 // only one, so RMT can use all buffers for text
     // real HW (Auto-type controller)
@@ -84,6 +92,7 @@
 //    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:791:0:113:0:7:A"
 //    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:791:0:113:0:7:A"
   #elif DEVICE==DMX
+    #define CONFIG_P44_BUILD_VARIANT "DMXForwarder"
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
     #define CONFIG_P44BTDMX_REFRESH_UNIVERSE true
     #define CONFIG_P44_DMX_RX 1
@@ -108,6 +117,9 @@
   #define JSONAPI 0
 #endif
 
+#ifndef CONFIG_P44_BUILD_VARIANT
+  #define CONFIG_P44_BUILD_VARIANT "Custom"
+#endif
 #ifndef CONFIG_P44_DMX_RX
   #define CONFIG_P44_DMX_RX 0
 #endif
@@ -124,6 +136,9 @@
 
 // MARK: - light hardware configuration
 
+#ifndef CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS
+  #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 1
+#endif
 #ifndef CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0
   #if CONFIG_P44BTDMX_PWMLIGHT
     // - single ledchain on DI0 (gpio23)
@@ -135,17 +150,26 @@
 #endif
 #ifndef CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1
   #if CONFIG_P44BTDMX_PWMLIGHT
-    // - single ledchain on DI0 (gpio23)
+    // - single ledchain on DI0 (RJ11/J6, gpio23)
     #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:150:0:150:0:1"
   #else
-    // - dual ledchains on DI1 and DI2 (gpio22 and gpio21)
+    // - dual ledchains on DI1 (J5, gpio22) and DI2 (J1, gpio21)
     #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio22:150:0:150:0:1"
   #endif
 #endif
 #ifndef CONFIG_P44BTDMX_SECONDCHAIN_CFG
-  // - second ledchain on DI2 (gpio21)
+  // - second ledchain on DI2 (J1, gpio21)
   #define CONFIG_P44BTDMX_SECONDCHAIN_CFG "WS2813:gpio21:150:0:150:1:1"
 #endif
+#ifndef CONFIG_P44BTDMX_THIRDCHAIN_CFG
+  // - third ledchain on DI3 (J4/Audiojack, gpio19)
+  #define CONFIG_P44BTDMX_THIRDCHAIN_CFG "WS2813:gpio19:150:0:150:2:1"
+#endif
+#ifndef CONFIG_P44BTDMX_FOURTHCHAIN_CFG
+  // - fourth ledchain on DI0 (J6/RJ11, gpio23)
+  #define CONFIG_P44BTDMX_FOURTHCHAIN_CFG "WS2813:gpio23:150:0:150:3:1"
+#endif
+
 #ifndef CONFIG_P44BTDMX_MAXMILLIWATTS
   #define CONFIG_P44BTDMX_MAXMILLIWATTS 15000 // standard 10Ah Powerbank delivers 3A @ 5V
 #endif
@@ -200,6 +224,7 @@ public:
 
   virtual void initialize()
   {
+    LOG(LOG_NOTICE,"p44BTDMX build variant %s - built %s", CONFIG_P44_BUILD_VARIANT, __DATE__);
     LOG(LOG_NOTICE,"initialize");
     // get DIP switch state
     // A0..A5 = GPIO26,27,32,34,35,18 (18 must be patched, is connected to 7 which disturbs SPI flash)
@@ -233,6 +258,11 @@ public:
     // enable LED chain outputs in P44-BTLC
     ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
     // P44BTDMX receiver object
+    #if CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS
+    // - Light 48..63 are in blocks of 4 lights per controller (DMX addresses 385..512)
+    bool fourLightsController = (dispswitch & 0x18)==0x18;
+    if (fourLightsController) dispswitch &= 0xFE; // ignore bit 0
+    #endif
     dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
     dmxReceiver->setAddressingInfo((dispswitch & 0x1F)*2); // 64 lights max, in steps of 2
     #ifdef CONFIG_P44BTDMX_SYSTEMKEY
@@ -263,7 +293,18 @@ public:
     #if !CONFIG_P44BTDMX_SINGLECHAIN
     LEDChainArrangement::addLEDChain(ledChainArrangement, secondChainConfig);
     #endif
-    #endif
+    #if CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS
+    // - four light controllers can even have 4 chains
+    if (fourLightsController) {
+      #ifdef CONFIG_P44BTDMX_THIRDCHAIN_CFG
+      LEDChainArrangement::addLEDChain(ledChainArrangement, CONFIG_P44BTDMX_THIRDCHAIN_CFG);
+      #endif
+      #ifdef CONFIG_P44BTDMX_FOURTHCHAIN_CFG
+      LEDChainArrangement::addLEDChain(ledChainArrangement, CONFIG_P44BTDMX_FOURTHCHAIN_CFG);
+      #endif
+    }
+    #endif // FOURLIGHT_CONTROLLERS
+    #endif // not PWMLIGHT
     if (ledChainArrangement) {
       PixelRect r = ledChainArrangement->totalCover();
       ViewStackPtr rootView = ViewStackPtr(new ViewStack);
@@ -281,6 +322,14 @@ public:
       #if !CONFIG_P44BTDMX_PWMLIGHT && !CONFIG_P44BTDMX_SINGLECHAIN
       r.y = 1;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
+      #if CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS
+      if (fourLightsController) {
+        r.y = 2;
+        dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
+        r.y = 3;
+        dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
+      }
+      #endif // FOURLIGHT_CONTROLLERS
       #endif // !PWMLIGHT
       #endif // TEXT
       LOG(LOG_INFO, "lrg status: %s", rootView->viewStatus()->json_c_str());
