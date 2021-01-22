@@ -174,10 +174,9 @@
 
 - (IBAction)resetUniverse:(id)sender
 {
-  // reset brightness and mode only: all off, but detail settings undisturbed
+  // reset brightness: all off, but detail settings undisturbed
   for (int light=0; light<NUM_LIGHTS; light++) {
     [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:light*LIGHT_CHANNELS+2 toValue:0]; // reset brightness
-    [[AppDelegate sharedAppDelegate].p44BTDMXManager.p44BTDMX setChannel:light*LIGHT_CHANNELS+7 toValue:0]; // reset mode
   }
   [self updateChannels];
   [self restartBroadcast];
