@@ -38,7 +38,7 @@
   #define TEXT 4
   #define DMX 5
   // current device type
-  #define DEVICE DMX
+  #define DEVICE AUTO
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
@@ -68,6 +68,7 @@
   #elif DEVICE==AUTO
     #define CONFIG_P44_BUILD_VARIANT "Auto"
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
+    #define CONFIG_P44BTDMX_MAXMILLIWATTS 18000 // experiment show that 18W caclulated give approx 15W actual (3A)
     #define CONFIG_P44_DMX_RX 0
     #define CONFIG_P44_BTDMX_SENDER 0
     #define CONFIG_P44_BTDMX_RECEIVER 1
