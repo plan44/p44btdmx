@@ -65,7 +65,14 @@ const char* texts[] = {
   "NETTO 0 BIS 2030 - Wir fordern netto 0 Treibhausgasemissionen bis 2030, damit die Schweiz nur noch so viel Emissionen ausstösst, wie die Natur aufnehmen kann. (climatestrike.ch) +++ ",
   "The Quick Brown Fox Jumps Over The Lazy Dog ... ",
   "So Long, and Thanks for All the Fish --- ",
-  "Azelle, Bölle schäle, d Chatz gaht uf Walliselle, chunnt si wieder hei, hätt si chrummi Bei. Piff, paff, puff, und du bisch ehr und redlich duss."
+  "Azelle, Bölle schäle, d Chatz gaht uf Walliselle, chunnt si wieder hei, hätt si chrummi Bei. Piff, paff, puff, und du bisch ehr und redlich duss!  ",
+  "Æ",
+  "Æ ",
+  "ÆÆ ",
+  "ÆÆÆ ",
+  "Æ +++ ",
+  "ÆÆ +++ ",
+  "ÆÆÆ +++ "
 };
 const int numTexts = sizeof(texts)/sizeof(char*);
 
