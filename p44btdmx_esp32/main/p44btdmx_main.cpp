@@ -37,8 +37,9 @@
   #define MINIMASK 3
   #define TEXT 4
   #define DMX 5
+  #define MINIDRINK 6
   // current device type
-  #define DEVICE AUTO
+  #define DEVICE MINIDRINK
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
@@ -65,6 +66,19 @@
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 1
     #define CONFIG_P44BTDMX_PWMLIGHT_MINPOWER 0 // not limited, connected LEDs cant exceed max power anyway
+  #elif DEVICE==MINIDRINK
+    #define CONFIG_P44_BUILD_VARIANT "MiniDrink"
+    //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
+    #define LIGHT_Y_SIZE 2 // lights are 2 pixels wide (front and back)
+    #define CONFIG_P44_DMX_RX 0
+    #define CONFIG_P44_BTDMX_SENDER 0
+    #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 0
+    #define CONFIG_P44_BTDMX_LIGHTS 1
+    #define CONFIG_P44BTDMX_PWMLIGHT 0
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:94:0:47:0:2:A" // single ledchain on DI0 (gpio23)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:94:0:47:0:2:A" // single ledchain on DI0 (gpio23)
+    #define CONFIG_P44BTDMX_SECONDCHAIN_CFG "WS2813:gpio22:94:0:47:2:2:A" // single ledchain on DI1 (gpio22)
   #elif DEVICE==AUTO
     #define CONFIG_P44_BUILD_VARIANT "Auto"
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
@@ -137,6 +151,9 @@
 
 // MARK: - light hardware configuration
 
+#ifndef LIGHT_Y_SIZE
+  #define LIGHT_Y_SIZE 1 // lights are single strips by default
+#endif
 #ifndef CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS
   #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 1
 #endif
@@ -317,17 +334,17 @@ public:
       #if DEVICE==TEXT
       dmxReceiver->addLight(new P44lrgTextLight(ledChainArrangement->getRootView(), r));
       #else
-      r.dy = 1;
+      r.dy = LIGHT_Y_SIZE;
       r.y = 0;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
       #if !CONFIG_P44BTDMX_PWMLIGHT && !CONFIG_P44BTDMX_SINGLECHAIN
-      r.y = 1;
+      r.y = 1*LIGHT_Y_SIZE;
       dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
       #if CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS
       if (fourLightsController) {
-        r.y = 2;
+        r.y = 2*LIGHT_Y_SIZE;
         dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
-        r.y = 3;
+        r.y = 3*LIGHT_Y_SIZE;
         dmxReceiver->addLight(new P44lrgLight(ledChainArrangement->getRootView(), r));
       }
       #endif // FOURLIGHT_CONTROLLERS

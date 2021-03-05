@@ -91,7 +91,7 @@ bool P44lrgLight::applyChannels()
       // - y pos and size
       PixelRect f = mLightView->getFrame();
       f.y = channels[7].pending & 0x80 ? 0 : mOrigFrame.y;
-      f.dy = channels[7].pending & 0x40 ? 4 : 1;
+      f.dy = (channels[7].pending & 0x40 ? 4 : 1) * mOrigFrame.dy;
       mLightView->setFrame(f);
       PixelPoint sz = mLightView->getContentSize();
       sz.y = f.dy;
@@ -144,11 +144,13 @@ bool P44lrgLight::applyChannels()
         }
         case 5:
         case 7:
+        case 9:
           // fixed soft edge, moving in x direction, gradient and speed determine amplitude and interval
           mLightView->setColoringParameters(col, -0.9, gradient_curve_lin, 0, gradient_none, 0, gradient_none, false);
           goto mover;
         case 6:
         case 8:
+        case 10:
           // hard edge, moving in x direction, gradient and speed determine amplitude and interval
           mLightView->setColoringParameters(col, 0, gradient_none, 0, gradient_none, 0, gradient_none, false);
         mover: {
@@ -175,7 +177,7 @@ bool P44lrgLight::applyChannels()
   ) {
     OLOG(LOG_INFO,"Position change");
     mLightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
-    if (mode==5 || mode==6) {
+    if (mode>=5 && mode<=10) {
       // change of position needs restart of (positional) animation
       animationChanged = true;
     }
@@ -229,7 +231,10 @@ bool P44lrgLight::applyChannels()
       case 5:
       case 6:
       case 7:
-      case 8: {
+      case 8:
+      case 9:
+      case 10:
+      {
         // position 0..255, changing from current x to x +/- frame.x size scaled by gradient channel value
         // - set start poition
         mLightView->setRelativeContentOrigin((double)channels[3].pending/128-1, 0, true);
@@ -238,8 +243,13 @@ bool P44lrgLight::applyChannels()
         OLOG(LOG_INFO, "mLightView: %s", mLightView->viewStatus()->json_c_str());
         // - animate from there +/- the frame size
         if (mode==7 || mode==8) {
-          // shoot
+          // accelerating shoot
           mAnimation->function("easein");
+          mAnimation->repeat(false, 0)->from(content.x)->animate(content.x+channels[6].pending*frame.dx*2/255-frame.dx, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
+        }
+        else if (mode==9 || mode==10) {
+          // wandering
+          mAnimation->function("linear");
           mAnimation->repeat(false, 0)->from(content.x)->animate(content.x+channels[6].pending*frame.dx*2/255-frame.dx, (MLMicroSeconds)(255-channels[5].pending)*4900*MilliSecond/255 + 100*MilliSecond); // 5..0.1 seconds
         }
         else {
