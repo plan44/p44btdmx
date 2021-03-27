@@ -39,7 +39,7 @@
   #define DMX 5
   #define MINIDRINK 6
   // current device type
-  #define DEVICE TEXT
+  #define DEVICE MINIDRINK
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
@@ -76,9 +76,9 @@
     #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 0
     #define CONFIG_P44_BTDMX_LIGHTS 1
     #define CONFIG_P44BTDMX_PWMLIGHT 0
-    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:94:0:47:0:2:A" // single ledchain on DI0 (gpio23)
-    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:94:0:47:0:2:A" // single ledchain on DI0 (gpio23)
-    #define CONFIG_P44BTDMX_SECONDCHAIN_CFG "WS2813:gpio22:94:0:47:2:2:A" // single ledchain on DI1 (gpio22)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0 "WS2813:gpio23:118:0:59:0:2:A" // single ledchain on DI0 (gpio23)
+    #define CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 "SK6812:gpio23:118:0:59:0:2:A" // single ledchain on DI0 (gpio23)
+    #define CONFIG_P44BTDMX_SECONDCHAIN_CFG "WS2813:gpio22:118:0:59:2:2:A" // single ledchain on DI1 (gpio22)
   #elif DEVICE==AUTO
     #define CONFIG_P44_BUILD_VARIANT "Auto"
     //#define CONFIG_DEFAULT_LOG_LEVEL 6 // FIXME: remove
