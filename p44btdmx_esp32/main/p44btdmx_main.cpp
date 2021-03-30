@@ -39,7 +39,7 @@
   #define DMX 5
   #define MINIDRINK 6
   // current device type
-  #define DEVICE MINIMASK
+  #define DEVICE MASK
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
