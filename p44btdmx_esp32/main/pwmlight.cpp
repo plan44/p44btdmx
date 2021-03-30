@@ -104,6 +104,7 @@ bool PWMLight::applyChannels()
     HSV[1] = (double)channels[1].pending/255;
     HSV[2] = (double)channels[2].pending/255;
     colorOutput.setHSV(HSV);
+    animationChanged = true; // base color change also changes animator
   }
   // speed
   if (channels[5].pending!=channels[5].current) {
@@ -115,7 +116,10 @@ bool PWMLight::applyChannels()
   }
   // mode
   if (mode!=channels[7].current) {
-    mAnimator.reset();
+    if (mAnimator) {
+      mAnimator->stop(false);
+      mAnimator.reset();
+    }
     switch(mode) {
       case 4: {
         // pulse animation
