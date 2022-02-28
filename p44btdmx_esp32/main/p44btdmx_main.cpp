@@ -38,8 +38,9 @@
   #define TEXT 4
   #define DMX 5
   #define MINIDRINK 6
+  #define MONITOR 7
   // current device type
-  #define DEVICE MASK
+  #define DEVICE MONITOR
   // common settings
   #define CONFIG_DEFAULT_LOG_LEVEL 5
   #define CONFIG_P44_WIFI_SUPPORT 0
@@ -114,6 +115,17 @@
     #define CONFIG_P44_BTDMX_SENDER 1
     #define CONFIG_P44_BTDMX_RECEIVER 0
     #define CONFIG_P44_BTDMX_LIGHTS 0
+  #elif DEVICE==MONITOR
+    #define CONFIG_P44_BUILD_VARIANT "Monitor"
+    #define CONFIG_DEFAULT_LOG_LEVEL 6
+    #define CONFIG_P44_DMX_RX 0
+    #define CONFIG_P44_BTDMX_SENDER 0
+    #define CONFIG_P44_BTDMX_RECEIVER 1
+    #define CONFIG_P44_BTDMX_MONITOR 1
+    #define CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS 0
+    #define CONFIG_P44_BTDMX_LIGHTS 0
+    #define CONFIG_P44BTDMX_SINGLECHAIN 0 // only one, so RMT can use all buffers for text
+    #define CONFIG_P44BTDMX_PWMLIGHT 0
   #else
     #error "Unknown device"
   #endif
@@ -146,6 +158,9 @@
 #endif
 #ifndef CONFIG_P44_BTDMX_LIGHTS
   #define CONFIG_P44_BTDMX_LIGHTS 1
+#endif
+#ifndef CONFIG_P44_BTDMX_MONITOR
+  #define CONFIG_P44_BTDMX_MONITOR 0
 #endif
 
 
@@ -214,8 +229,11 @@ class P44BTDMXController : public Application
   #if CONFIG_P44_BTDMX_LIGHTS
   LEDChainArrangementPtr ledChainArrangement;
   DigitalIoPtr ledChainEnable; ///< output in P44-BTLC for enabling the 5V WS281x drivers (active low)
-  P44BTDMXreceiverPtr dmxReceiver; ///< p44 BT DMX receiver
   PWMLightPtr pwmLight; ///< PWM light, if the is any
+  #endif
+
+  #if CONFIG_P44_BTDMX_RECEIVER
+  P44BTDMXreceiverPtr dmxReceiver; ///< p44 BT DMX receiver
   #endif
 
   #if CONFIG_P44_BTDMX_SENDER
@@ -272,21 +290,25 @@ public:
     dmxSender->setSystemKey(systemkey);
     #endif
     #endif // CONFIG_P44_BTDMX_SENDER
+    #if CONFIG_P44_BTDMX_RECEIVER
+    dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
+    #ifdef CONFIG_P44BTDMX_SYSTEMKEY
+    string systemkey = CONFIG_P44BTDMX_SYSTEMKEY;
+    dmxReceiver->setSystemKey(systemkey);
+    #if CONFIG_P44_BTDMX_MONITOR
+    dmxReceiver->setLoggerMode(true);
+    #endif
+    #endif
+    #endif // CONFIG_P44_BTDMX_RECEIVER
     #if CONFIG_P44_BTDMX_LIGHTS
     // enable LED chain outputs in P44-BTLC
     ledChainEnable = DigitalIoPtr(new DigitalIo("gpio.25", true, 0)); // IO25 is LED_DATA_EN0
-    // P44BTDMX receiver object
     #if CONFIG_P44_ENABLE_FOURLIGHT_CONTROLLERS
     // - Light 48..63 are in blocks of 4 lights per controller (DMX addresses 385..512)
     bool fourLightsController = (dispswitch & 0x18)==0x18;
     if (fourLightsController) dispswitch &= 0xFE; // ignore bit 0
     #endif
-    dmxReceiver = P44BTDMXreceiverPtr(new P44BTDMXreceiver);
     dmxReceiver->setAddressingInfo((dispswitch & 0x1F)*2); // 64 lights max, in steps of 2
-    #ifdef CONFIG_P44BTDMX_SYSTEMKEY
-    string systemkey = CONFIG_P44BTDMX_SYSTEMKEY;
-    dmxReceiver->setSystemKey(systemkey);
-    #endif
     // Real lights initialisation
     const char *firstChainConfig = (dispswitch&0x20) ? CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT1 : CONFIG_P44BTDMX_FIRSTCHAIN_CFG_VARIANT0;
     #if CONFIG_P44BTDMX_PWMLIGHT
@@ -407,6 +429,7 @@ public:
       if (BtAdvertisements::findADStruct((uint8_t *)aAdvData.c_str(), 0xFF, adMfgData, adMfgDataSz)) {
         // let dmxreceiver handle it
         if (dmxReceiver->processBTAdvMfgData(string((const char*)adMfgData, adMfgDataSz))) {
+          #if CONFIG_P44_BTDMX_LIGHTS
           // has caused changes in some of our channels -> recalculate power limit
           #if CONFIG_P44BTDMX_MAXMILLIWATTS>0
           LOG(LOG_INFO, "- LED chain power = %dmW, limit = %dmW, needed = %dmW", ledChainArrangement->getCurrentPower(), ledChainArrangement->getPowerLimit(), ledChainArrangement->getNeededPower());
@@ -419,8 +442,9 @@ public:
             if (pwmPower>0) pwmLight->setPowerLimit(pwmPower); // PWM can use rest
             LOG(LOG_INFO, "- PWM light power = %dmW, limit = %dmW, needed = %dmW", pwmLight->getCurrentPower(), pwmLight->getPowerLimit(), pwmLight->getNeededPower());
           }
-          #endif
-          #endif
+          #endif // CONFIG_P44BTDMX_PWMLIGHT_MINPOWER
+          #endif // CONFIG_P44BTDMX_MAXMILLIWATTS>0
+          #endif // CONFIG_P44_BTDMX_LIGHTS
         }
       }
     }

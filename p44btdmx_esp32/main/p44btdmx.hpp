@@ -75,11 +75,14 @@ namespace p44 {
     uint16_t mFirstLightNumber; ///< the first light ID we listen to (=DMX address / cLightBytes)
     LightsVector mLights;
     MLMicroSeconds mlastNativeData;
+    bool mIsLogger; ///< only log p44BTDMX traffic, no light
 
   public:
 
     P44BTDMXreceiver();
     virtual ~P44BTDMXreceiver();
+
+    void setLoggerMode(bool aIsLogger) { mIsLogger = aIsLogger; };
 
     /// @return prefix for log messages
     virtual string logContextPrefix() P44_OVERRIDE { return "p44BTDMX Rx"; };
