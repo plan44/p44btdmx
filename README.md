@@ -2,7 +2,7 @@
 
 ## Overview
 
-_p44btdmx_ was developed out of the need for a low-cost, robust, low weight, wireless extension of a DMX512 controlled light installation, integrating mobile SmartLED color light effects powered by standard USB powerbanks into actor's and dancer's costumes, in a musical performance.
+*p44BTDMX* was developed out of the need for a low-cost, robust, low weight, wireless extension of a DMX512 controlled light installation, integrating mobile SmartLED color light effects powered by standard USB powerbanks into actor's and dancer's costumes, in a [musical performance](https://plan44.ch/custom/custom.php#spacedream).
 
 To keep the individual light controllers cost effective, these are based on very affordable ESP32 Wroom modules.
 
@@ -12,9 +12,9 @@ The p44BTDMX protocol can drive up to 64 lights with 8 channels (HSV color + 5 c
 
 ## Components
 
-_p44btdmx_ consists of a ESP32 project and an iOS App.
+*p44BTDMX* consists of a ESP32 project and an iOS App.
 
-**The ESP32 project** can be built in different ways
+**The ESP32 project** can be built in different ways (also see `README.md` within the `p44btdmx_esp32` folder for details and how to wire LED chains):
 
 - Light controller for 3-channel PWM lights and/or WS281x Smart LED chains with Bluetooth receiver
 - DMX interface box which translates DMX on the serial port to the (compressed, incremental) p44BTDMX protocol which is broadcast via Bluetooth advertisements (manufacturer specific data) to the light controllers.
@@ -23,7 +23,7 @@ There are a lot of `CONFIG_*` variables which can be set in sdkconfig via menu, 
 
 **The iOS App** allows directly controlling the p44BTDMX receivers (using iBeacon type advertisements). Note that receivers only listen to the iPhone app when no DMX interface box has been detected for 10 minutes. The iOS app is also [available in the App Store](https://apps.apple.com/ch/app/p44btdmx/id1545043495) for those who don't want to build it from sources.
 
-**The p44BTDMX broadcast protocol** is designed for robustness, not security. Still, receivers and senders must be paired with a shared secret, which must be defined in `sdkconfig` as `CONFIG_P44BTDMX_SYSTEM_KEY` as a string of 32 characters (and in the Settings of the iOS app). Note that this "key" only protects from interference of two neigbouring _p44BTDMX_ systems and provides a _very_ modest tampering barrier. But in no way _p44BTDMX_ is a secure protocol; anyone reasonably capable would be able to hack it. But again: this was a design choice suitable for the task at hand when developing this. Don't use it to control nuclear submarines, please!
+**The p44BTDMX broadcast protocol** is designed for robustness, not security. Still, receivers and senders must be paired with a shared secret, which must be defined in `sdkconfig` as `CONFIG_P44BTDMX_SYSTEM_KEY` as a string of 32 characters (and in the Settings of the iOS app). Note that this "key" only protects from interference of two neigbouring *p44BTDMX* systems and provides a *very* modest tampering barrier. But in no way *p44BTDMX* is a secure protocol; anyone reasonably capable would be able to hack it. But again: this was a design choice suitable for the task at hand when developing this. Don't use it to control nuclear submarines, please!
 
 ## Contributions
 
